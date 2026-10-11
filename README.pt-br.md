@@ -389,7 +389,9 @@ Toda contribuição ajuda a manter o desenvolvimento de código aberto. Obrigado
 ## Agradecimentos
 
 - Lógica de troca de contas do Antigravity IDE baseada em: [Antigravity-Manager](https://github.com/lbjlaq/Antigravity-Manager)
-- Implementação do serviço Codex API desenvolvida com referência a: [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)
+- O serviço Codex API integra o CLIProxyAPI. O suporte a Codex Live WebRTC/sideband, a segurança de estado do Responses WebSocket, o canonical token accounting v2, a compatibilidade com Multi-Agent V2, as contas e o OAuth do Grok CLI, a compatibilidade com o protocolo `apply_patch` do Grok, a classificação de erros do pool de contas e os limites de recuperação de estado também têm como referência sua implementação de código aberto: [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) (MIT)
+- O ambiente de execução do helper opcional de login do Claude é baseado em: [Electron](https://github.com/electron/electron)
+- Os proxies de contas Codex usam o [Mihomo](https://github.com/MetaCubeX/mihomo) em um processo separado para nós e grupos Clash compatíveis. A semântica de configuração dos parâmetros dos nós, dos grupos aninhados e das políticas de bloqueio integradas, a API local de logs de conexão e o projeto das verificações de integridade e da alternância em caso de falha têm como referência seu código-fonte e sua documentação oficiais. O usuário baixa ou importa o mecanismo por iniciativa própria; ele não está incluído no instalador do aplicativo. Isso não representa uma parceria oficial.
 
 Agradecemos ao autor do projeto por suas contribuições de código aberto! Se esses projetos lhe foram úteis, por favor, dê a eles uma ⭐ estrela para demonstrar seu apoio!
 
