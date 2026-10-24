@@ -336,6 +336,52 @@ fn orphan(name: &str, call_id: &str, output: Value) -> Value {
     json!({"type":"function_call_output","namespace":"codex_app","name":name,"call_id":call_id,"output":output})
 }
 
+#[test]
+fn chained_cpa_flat_calls_restore_only_unambiguous_request_declarations() {
+    let mut body = json!({"tools":tools(),"input":[]});
+    let context = prepare(&headers("codex_cli_rs"), &mut body, enabled(), &[]);
+    let protected = json!({"type":"function_call","name":"collaboration__wait_agent"});
+    for event_type in ["response.output_item.added", "response.output_item.done"] {
+        let mut event = json!({"type":event_type,"item":{
+            "type":"function_call","name":"collaboration__wait_agent",
+            "call_id":"unchanged","arguments":protected.clone()
+        }});
+        context.restore(&mut event);
+        assert_eq!(event["item"]["namespace"], COLLABORATION);
+        assert_eq!(event["item"]["name"], "wait_agent");
+        assert_eq!(event["item"]["call_id"], "unchanged");
+        assert_eq!(event["item"]["arguments"], protected);
+    }
+    for mut call in [
+        json!({"type":"function_call","name":"collaboration__unknown"}),
+        json!({"type":"function_call","namespace":"other","name":"collaboration__wait_agent"}),
+        json!({"type":"message","name":"collaboration__wait_agent"}),
+        json!({"type":"function_call_output","output":protected}),
+    ] {
+        let original = call.clone();
+        context.restore(&mut call);
+        assert_eq!(call, original);
+    }
+    for additional in [false, true] {
+        let conflict = json!({"type":"function","name":"collaboration__wait_agent"});
+        let mut body = json!({"tools":tools(),"input":[]});
+        if additional {
+            body["input"] = json!([{"type":"additional_tools","tools":[conflict]}]);
+        } else {
+            body["tools"].as_array_mut().unwrap().push(conflict);
+        }
+        let context = prepare(&headers("codex_cli_rs"), &mut body, enabled(), &[]);
+        let mut call = json!({"type":"function_call","name":"collaboration__wait_agent"});
+        let original = call.clone();
+        context.restore(&mut call);
+        assert_eq!(call, original);
+    }
+    let mut event = json!({"type":"function_call","name":"collaboration__wait_agent"});
+    let original = event.clone();
+    Context::default().restore(&mut event);
+    assert_eq!(event, original);
+}
+
 fn child_headers() -> HeaderMap {
     let mut headers = headers("curl/8");
     headers.insert(

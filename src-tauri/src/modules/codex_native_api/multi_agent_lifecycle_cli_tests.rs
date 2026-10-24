@@ -10,7 +10,7 @@ const FOLLOWUP: &str = "FOLLOWUP_SUBTASK";
 const FIRST_RESULT: &str = "CHILD_FIRST_RESULT";
 const FINAL_RESULT: &str = "CHILD_FINAL_RESULT";
 
-fn scripted_response(body: &Value, sequence: usize, flattened: bool) -> Value {
+fn scripted_response(body: &Value, sequence: usize, flat_namespace: Option<&str>) -> Value {
     let raw = body.to_string();
     let parent = raw.contains(ROOT);
     let input = body["input"].as_array().unwrap();
@@ -57,9 +57,9 @@ fn scripted_response(body: &Value, sequence: usize, flattened: bool) -> Value {
     let output = if let Some((name, call_id, args)) = next {
         let mut call = json!({"type":"function_call","id":format!("item-{call_id}"),"call_id":call_id,
             "namespace":declaration_namespace(body),"name":name,"arguments":args.to_string(),"status":"completed"});
-        if flattened {
+        if let Some(namespace) = flat_namespace {
             call.as_object_mut().unwrap().remove("namespace");
-            call["name"] = json!(format!("{}__{name}", declaration_namespace(body)));
+            call["name"] = json!(format!("{namespace}__{name}"));
         }
         call
     } else {
@@ -80,16 +80,22 @@ fn scripted_response(body: &Value, sequence: usize, flattened: bool) -> Value {
 #[tokio::test]
 #[ignore = "requires COCKPIT_PLAN_CODEX_BIN; runs official CLI only against isolated loopback"]
 async fn multi_agent_lifecycle_real_codex_cli_isolated_plan_gateway() {
-    run_cli_lifecycle(false).await;
+    run_cli_lifecycle(None).await;
 }
 
 #[tokio::test]
 #[ignore = "requires COCKPIT_PLAN_CODEX_BIN; runs official CLI only against isolated loopback"]
 async fn multi_agent_lifecycle_real_codex_cli_flattened_optimized_calls() {
-    run_cli_lifecycle(true).await;
+    run_cli_lifecycle(Some("collaboration-optimize")).await;
 }
 
-async fn run_cli_lifecycle(flattened: bool) {
+#[tokio::test]
+#[ignore = "requires COCKPIT_PLAN_CODEX_BIN; runs official CLI only against isolated loopback"]
+async fn multi_agent_lifecycle_real_codex_cli_chained_cpa_flat_calls() {
+    run_cli_lifecycle(Some("collaboration")).await;
+}
+
+async fn run_cli_lifecycle(flat_namespace: Option<&'static str>) {
     let binary = std::env::var("COCKPIT_PLAN_CODEX_BIN")
         .expect("select an official local Codex CLI explicitly");
     let workspace = tempfile::tempdir().unwrap();
@@ -109,7 +115,7 @@ async fn run_cli_lifecycle(flattened: bool) {
             if invalid {
                 return (StatusCode::BAD_REQUEST, Json(json!({"error":{"code":"unsupported_value","param":"input","message":"Unsupported private agent input or excessive loopback turns"}}))).into_response();
             }
-            let response = scripted_response(&body, sequence, flattened);
+            let response = scripted_response(&body, sequence, flat_namespace);
             let item = &response["output"][0];
             let events = [
                 json!({"type":"response.created","response":{"id":response["id"],"status":"in_progress","output":[]}}),
