@@ -438,8 +438,12 @@ fn restore_value(value: &mut Value) {
                     {
                         object.insert("namespace".into(), json!(COLLABORATION));
                         object.insert("name".into(), json!(name));
-                    } else if let Some(name) = name.strip_prefix("collaboration-optimize__") {
-                        object.insert("name".into(), json!(format!("collaboration__{name}")));
+                    } else if let Some(name) = name
+                        .strip_prefix("collaboration-optimize__")
+                        .filter(|name| !name.is_empty())
+                    {
+                        object.insert("namespace".into(), json!(COLLABORATION));
+                        object.insert("name".into(), json!(name));
                     }
                 }
             }

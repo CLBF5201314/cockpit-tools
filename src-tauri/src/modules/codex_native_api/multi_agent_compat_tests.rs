@@ -300,7 +300,8 @@ fn cpa_response_restore_changes_all_wire_forms_without_touching_opaque_payloads(
     assert_eq!(output[1]["namespace"], COLLABORATION);
     assert_eq!(output[1]["name"], "send_message");
     assert_eq!(output[1]["input"], protected);
-    assert_eq!(output[2]["name"], "collaboration__followup_task");
+    assert_eq!(output[2]["namespace"], COLLABORATION);
+    assert_eq!(output[2]["name"], "followup_task");
     assert_eq!(output[3]["output"], protected);
     assert_eq!(output[4]["output"], protected);
     assert_eq!(output[5]["name"], COLLABORATION);
@@ -309,16 +310,26 @@ fn cpa_response_restore_changes_all_wire_forms_without_touching_opaque_payloads(
 
 #[test]
 fn cpa_response_restore_requires_request_context_and_supports_sse_item_events() {
-    let original = json!({"type":"response.output_item.added","item":{"type":"function_call","namespace":OPTIMIZED,"name":"spawn_agent"}});
-    let mut event = original.clone();
-    Context::default().restore(&mut event);
-    assert_eq!(event, original);
-    Context {
-        optimized_namespace: true,
-        ..Default::default()
+    for event_type in ["response.output_item.added", "response.output_item.done"] {
+        for tool in ["spawn_agent", "wait_agent", "followup_task", "send_message"] {
+            let original = json!({"type":event_type,"item":{
+                "type":"function_call","name":format!("collaboration-optimize__{tool}"),
+                "arguments":"opaque collaboration-optimize__wait_agent","call_id":"preserved"
+            }});
+            let mut event = original.clone();
+            Context::default().restore(&mut event);
+            assert_eq!(event, original);
+            Context {
+                optimized_namespace: true,
+                ..Default::default()
+            }
+            .restore(&mut event);
+            assert_eq!(event["item"]["namespace"], COLLABORATION);
+            assert_eq!(event["item"]["name"], tool);
+            assert_eq!(event["item"]["arguments"], original["item"]["arguments"]);
+            assert_eq!(event["item"]["call_id"], "preserved");
+        }
     }
-    .restore(&mut event);
-    assert_eq!(event["item"]["namespace"], COLLABORATION);
 }
 
 fn orphan(name: &str, call_id: &str, output: Value) -> Value {
