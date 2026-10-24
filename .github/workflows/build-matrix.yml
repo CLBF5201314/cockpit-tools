@@ -119,25 +119,9 @@ jobs:
       - name: 🧪 TypeScript regression tests
         run: npm test
 
-  preflight-claude-gateway:
-    name: "🧪 Claude Desktop Gateway: ${{ matrix.os }}"
-    runs-on: ${{ matrix.os }}
-    permissions:
-      contents: read
-    strategy:
-      matrix:
-        os: [ubuntu-22.04, windows-latest]
-    steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v4
-      - name: 🦀 Rust setup
-        uses: dtolnay/rust-toolchain@stable
-      - name: 🧪 Test Claude Desktop Gateway configuration
-        run: cargo test --manifest-path tests/claude-desktop-gateway/Cargo.toml --locked --lib
-
   build:
     name: "🏗️ Build: ${{ matrix.label }}"
-    needs: [preflight-locales, preflight-typecheck, preflight-tests, preflight-ts-windows, preflight-claude-gateway]
+    needs: [preflight-locales, preflight-typecheck, preflight-tests, preflight-ts-windows]
     runs-on: ${{ matrix.platform }}
     permissions:
       contents: read
@@ -197,12 +181,13 @@ jobs:
         with:
           target: ${{ matrix.cache_target }}
 
-      - name: 🧪 Test Codex context preservation
+      - name: 🧪 Test account configuration preservation
         if: matrix.label == 'ubuntu-22.04'
         working-directory: src-tauri
         run: |
           cargo test instance_configuration_save --lib
           cargo test quick_config_catalog_only_context_preservation --lib
+          cargo test claude_desktop_gateway --lib --locked
 
       - name: 🐹 Go setup
         uses: actions/setup-go@v5

@@ -132,20 +132,19 @@ pub fn build_default_model_mappings(
         .collect()
 }
 
-pub fn ensure_gateway_for_account(
+/// Keep the previous endpoint alive until its replacement has been saved.
+pub(crate) fn apply_gateway_for_account(
     account: &ClaudeAccount,
-) -> Result<ClaudeDesktopLocalGatewayEndpoint, String> {
+    apply: impl FnOnce(&ClaudeDesktopLocalGatewayEndpoint) -> Result<(), String>,
+) -> Result<(), String> {
     let config = GatewayConfig::from_account(account)?;
     let mut runtimes = GATEWAY_RUNTIMES
         .lock()
         .map_err(|_| "Claude 本地网关锁已损坏".to_string())?;
     if let Some(runtime) = runtimes.get(&config.account_id) {
         if runtime.fingerprint == config.fingerprint {
-            return Ok(runtime.endpoint.clone());
+            return apply(&runtime.endpoint);
         }
-    }
-    if let Some(runtime) = runtimes.remove(&config.account_id) {
-        stop_runtime(runtime);
     }
 
     let server =
@@ -167,16 +166,24 @@ pub fn ensure_gateway_for_account(
         .spawn(move || run_gateway(server, thread_config, local_api_key, stop_rx))
         .map_err(|e| format!("启动 Claude 本地网关线程失败: {}", e))?;
 
-    runtimes.insert(
-        config.account_id.clone(),
-        GatewayRuntime {
-            endpoint: endpoint.clone(),
-            fingerprint: config.fingerprint,
-            stop_tx,
-            handle: Some(handle),
-        },
-    );
-    Ok(endpoint)
+    let runtime = GatewayRuntime {
+        endpoint,
+        fingerprint: config.fingerprint,
+        stop_tx,
+        handle: Some(handle),
+    };
+    match apply(&runtime.endpoint) {
+        Ok(()) => {
+            if let Some(previous) = runtimes.insert(config.account_id, runtime) {
+                stop_runtime(previous);
+            }
+            Ok(())
+        }
+        Err(error) => {
+            stop_runtime(runtime);
+            Err(error)
+        }
+    }
 }
 
 fn stop_runtime(mut runtime: GatewayRuntime) {

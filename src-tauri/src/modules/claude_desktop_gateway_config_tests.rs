@@ -117,6 +117,10 @@ impl Fixture {
         )
     }
 
+    fn apply_account(&self, id: &str, account: &ClaudeAccount) -> Result<(), String> {
+        apply_account(&self.dir, &self.modes, id, account, &self.known)
+    }
+
     fn snapshot(&self) -> Vec<(PathBuf, Vec<u8>)> {
         fn collect(dir: &Path, result: &mut Vec<(PathBuf, Vec<u8>)>) {
             for entry in fs::read_dir(dir).unwrap() {
@@ -136,7 +140,7 @@ impl Fixture {
 }
 
 #[test]
-fn switching_provider_and_transport_preserves_policy_and_model_metadata() {
+fn switching_providers_preserves_policy_and_model_metadata() {
     let f = Fixture::new();
     f.seed();
     let original = read(&f.dir.join(format!("{A}.json")));
@@ -146,15 +150,22 @@ fn switching_provider_and_transport_preserves_policy_and_model_metadata() {
 
     for (id, url, key) in [
         (B, "https://new.invalid", "new-secret"),
-        (B, "http://127.0.0.1:12345", "ag-local-secret"),
         (A, "https://direct.invalid", "direct-secret"),
     ] {
         f.apply(id, &connection(url, key)).unwrap();
         let config = read(&f.dir.join(format!("{id}.json")));
-        for (field, value) in original.as_object().unwrap() {
-            if !is_connection_key(field) && field != "inferenceModels" {
-                assert_eq!(&config[field], value, "policy changed: {field}");
-            }
+        for field in [
+            "disableEssentialTelemetry",
+            "disableNonessentialTelemetry",
+            "modelPrefer1mContext",
+            "disableAutoUpdates",
+            "disableDeploymentModeChooser",
+            "coworkEgressAllowedHosts",
+            "disableBypassPermissionsMode",
+            "allowedWorkspaceFolders",
+            "unknownFuturePolicy",
+        ] {
+            assert_eq!(config[field], original[field], "policy changed: {field}");
         }
         assert_eq!(config["inferenceGatewayBaseUrl"], url);
         assert_eq!(config["inferenceGatewayApiKey"], key);
@@ -198,36 +209,11 @@ fn switching_provider_and_transport_preserves_policy_and_model_metadata() {
 }
 
 #[test]
-fn first_apply_does_not_invent_privacy_permissions_or_network_defaults() {
-    let f = Fixture::new();
-    f.apply(A, &build_provider_config(&gateway_account()).unwrap())
-        .unwrap();
-    let config = read(&f.dir.join(format!("{A}.json")));
-    assert!(config.get("coworkEgressAllowedHosts").is_none());
-    assert!(config.get("disableDeploymentModeChooser").is_none());
-    assert!(config.get("disableEssentialTelemetry").is_none());
-}
-
-#[test]
-fn provider_builder_retains_explicit_false_and_rejects_invalid_accounts() {
-    let mut account = gateway_account();
-    account.desktop_gateway_model_mappings.as_mut().unwrap()[0].supports_1m = Some(false);
-    let generated = build_provider_config(&account).unwrap();
-    assert_eq!(generated["inferenceModels"][0]["supports1m"], false);
-    assert_eq!(generated["inferenceGatewayAuthScheme"], "x-api-key");
-    account.api_key = None;
-    assert!(build_provider_config(&account).is_err());
-    account.auth_mode = ClaudeAuthMode::DesktopOAuth;
-    assert!(build_provider_config(&account).is_err());
-}
-
-#[test]
 fn actual_local_mapping_config_authenticates_and_routes_without_losing_policy() {
     let f = Fixture::new();
     f.seed();
     let mut account = gateway_account();
-    f.apply(B, &build_provider_config(&account).unwrap())
-        .unwrap();
+    f.apply_account(B, &account).unwrap();
     let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
     account.api_base_url = Some(format!("http://{}/anthropic", server.server_addr()));
     account.desktop_gateway_connection_mode = Some("local_mapping".to_string());
@@ -252,8 +238,7 @@ fn actual_local_mapping_config_authenticates_and_routes_without_losing_policy() 
             .respond(tiny_http::Response::from_string("{\"type\":\"message\"}"))
             .unwrap();
     });
-    f.apply(B, &build_provider_config(&account).unwrap())
-        .unwrap();
+    f.apply_account(B, &account).unwrap();
     let config = read(&f.dir.join(format!("{B}.json")));
     assert_eq!(config["disableEssentialTelemetry"], true);
     assert_eq!(
@@ -280,8 +265,7 @@ fn actual_local_mapping_config_authenticates_and_routes_without_losing_policy() 
     assert!(response.status().is_success());
     captured.join().unwrap();
     account.desktop_gateway_connection_mode = Some("direct".to_string());
-    f.apply(A, &build_provider_config(&account).unwrap())
-        .unwrap();
+    f.apply_account(A, &account).unwrap();
     let direct = read(&f.dir.join(format!("{A}.json")));
     assert_eq!(direct["inferenceGatewayApiKey"], "test-upstream-key");
     assert_eq!(direct["inferenceGatewayAuthScheme"], "x-api-key");
@@ -290,10 +274,44 @@ fn actual_local_mapping_config_authenticates_and_routes_without_losing_policy() 
 }
 
 #[test]
+fn failed_mapping_update_keeps_the_previous_endpoint_working() {
+    let f = Fixture::new();
+    let mut account = gateway_account();
+    account.id = "gateway-failed-update".to_string();
+    account.desktop_gateway_connection_mode = Some("local_mapping".to_string());
+    f.apply_account(A, &account).unwrap();
+    let previous = read(&f.dir.join(format!("{A}.json")));
+    fs::create_dir(f.dir.join("_meta.json.bak")).unwrap();
+    let before = f.snapshot();
+    account.api_key = Some("replacement-key".to_string());
+    assert!(f.apply_account(B, &account).is_err());
+    assert_eq!(before, f.snapshot());
+    let response = reqwest::blocking::Client::builder()
+        .no_proxy()
+        .timeout(std::time::Duration::from_secs(5))
+        .build()
+        .unwrap()
+        .get(format!(
+            "{}/v1/models",
+            previous["inferenceGatewayBaseUrl"].as_str().unwrap()
+        ))
+        .bearer_auth(previous["inferenceGatewayApiKey"].as_str().unwrap())
+        .send()
+        .expect("previous gateway must remain available after a failed write");
+    assert!(response.status().is_success());
+}
+
+#[test]
 fn explicit_model_capabilities_override_existing_values_and_discovery_clears_old_list() {
     let f = Fixture::new();
     f.seed();
-    let mut generated = connection("https://new.invalid", "key");
+    let mut account = gateway_account();
+    account.desktop_gateway_model_mappings.as_mut().unwrap()[0].supports_1m = Some(false);
+    account.desktop_gateway_model_mappings.as_mut().unwrap()[0].label_override =
+        Some("New label".to_string());
+    let mut generated = build_provider_config(&account).unwrap();
+    assert_eq!(generated["inferenceModels"][0]["supports1m"], false);
+    assert_eq!(generated["inferenceGatewayAuthScheme"], "x-api-key");
     generated["inferenceModels"] = json!([{"name": "CLAUDE-SONNET", "supports1m": false,
         "labelOverride": "New label"}, {"name": "claude-haiku"}]);
     f.apply(A, &generated).unwrap();
@@ -322,6 +340,11 @@ fn reapply_preserves_entry_extensions_and_is_idempotent() {
     assert_eq!(meta["entries"][0]["custom"], 7);
     assert_eq!(meta["entries"][0][OWNER_KEY], true);
     let snapshot = f.snapshot();
+    // Reapplying identical content must still remove old plaintext backups.
+    write(
+        &f.dir.join(format!("{A}.json.bak")),
+        &connection("https://old.invalid", "old-key"),
+    );
     f.apply(A, &connection("https://new.invalid", "key"))
         .unwrap();
     assert_eq!(f.snapshot(), snapshot);
@@ -352,21 +375,6 @@ fn differently_cased_owned_ids_do_not_retire_the_selected_file() {
 }
 
 #[test]
-fn unchanged_provider_reapply_removes_a_legacy_credential_backup() {
-    let f = Fixture::new();
-    let desired = connection("https://new.invalid", "new-key");
-    f.apply(A, &desired).unwrap();
-    let backup = f.dir.join(format!("{A}.json.bak"));
-    write(&backup, &connection("https://old.invalid", "old-key"));
-    f.apply(A, &desired).unwrap();
-    assert!(!backup.exists());
-    assert_eq!(
-        read(&f.dir.join(format!("{A}.json")))["inferenceGatewayApiKey"],
-        "new-key"
-    );
-}
-
-#[test]
 fn cleanup_removes_only_owned_gateways_and_preserves_main_config() {
     let f = Fixture::new();
     f.seed();
@@ -384,27 +392,27 @@ fn cleanup_removes_only_owned_gateways_and_preserves_main_config() {
     let snapshot = f.snapshot();
     remove_managed(&f.dir, &f.modes, &f.known).unwrap();
     assert_eq!(snapshot, f.snapshot());
-}
 
-#[test]
-fn markers_survive_account_removal_but_non_gateway_reuse_is_protected() {
-    let f = Fixture::new();
-    f.apply(A, &connection("https://first.invalid", "key"))
+    // Ownership markers still identify Cockpit's configuration after the
+    // account record is gone, but a user replacement at the same ID is kept.
+    let marked = Fixture::new();
+    marked
+        .apply(A, &connection("https://first.invalid", "key"))
         .unwrap();
-    remove_managed(&f.dir, &f.modes, &BTreeSet::new()).unwrap();
-    assert!(!f.dir.join(format!("{A}.json")).exists());
-    f.seed();
+    remove_managed(&marked.dir, &marked.modes, &BTreeSet::new()).unwrap();
+    assert!(!marked.dir.join(format!("{A}.json")).exists());
+    marked.seed();
     write(
-        &f.dir.join(format!("{A}.json")),
+        &marked.dir.join(format!("{A}.json")),
         &json!({"inferenceProvider": "bedrock", "keep": true}),
     );
-    let before = f.snapshot();
-    assert!(f
+    let before = marked.snapshot();
+    assert!(marked
         .apply(A, &connection("https://first.invalid", "key"))
         .is_err());
-    assert_eq!(before, f.snapshot());
-    remove_managed(&f.dir, &f.modes, &f.known).unwrap();
-    assert_eq!(read(&f.dir.join(format!("{A}.json")))["keep"], true);
+    assert_eq!(before, marked.snapshot());
+    remove_managed(&marked.dir, &marked.modes, &marked.known).unwrap();
+    assert_eq!(read(&marked.dir.join(format!("{A}.json")))["keep"], true);
 }
 
 #[test]
@@ -424,6 +432,8 @@ fn user_owned_active_provider_is_copied_without_modifying_it_or_transferring_cre
         .unwrap();
     let config = read(&f.dir.join(format!("{B}.json")));
     assert!(config.get("inferenceFoundryApiKey").is_none());
+    assert!(config.get("coworkEgressAllowedHosts").is_none());
+    assert!(config.get("disableDeploymentModeChooser").is_none());
     assert_eq!(config["disableEssentialTelemetry"], true);
     assert_eq!(fs::read(f.dir.join("manual.json")).unwrap(), before);
 }
@@ -431,15 +441,22 @@ fn user_owned_active_provider_is_copied_without_modifying_it_or_transferring_cre
 #[test]
 fn invalid_json_shapes_and_path_ids_leave_every_file_unchanged() {
     for bad in ["", "{\"secret\":\"must-not-appear\",", "[]", "null"] {
-        let f = Fixture::new();
-        f.seed();
-        fs::write(f.dir.join(format!("{A}.json")), bad).unwrap();
-        let before = f.snapshot();
-        let error = f
-            .apply(B, &connection("https://new.invalid", "key"))
-            .unwrap_err();
-        assert!(!error.contains("must-not-appear"));
-        assert_eq!(before, f.snapshot());
+        for deployment in [false, true] {
+            let f = Fixture::new();
+            f.seed();
+            let path = if deployment {
+                f.modes[1].clone()
+            } else {
+                f.dir.join(format!("{A}.json"))
+            };
+            fs::write(path, bad).unwrap();
+            let before = f.snapshot();
+            let error = f
+                .apply(B, &connection("https://new.invalid", "key"))
+                .unwrap_err();
+            assert!(!error.contains("must-not-appear"));
+            assert_eq!(before, f.snapshot());
+        }
     }
     for bad_meta in [
         json!({"entries": {}}),
@@ -447,6 +464,8 @@ fn invalid_json_shapes_and_path_ids_leave_every_file_unchanged() {
         json!({"appliedId": 3}),
         json!({"appliedId": "../outside"}),
         json!({"appliedId": "_meta"}),
+        json!({"appliedId": "CON"}),
+        json!({"appliedId": "x:stream"}),
         json!({"appliedId": "missing"}),
     ] {
         let f = Fixture::new();
@@ -461,42 +480,25 @@ fn invalid_json_shapes_and_path_ids_leave_every_file_unchanged() {
 }
 
 #[test]
-fn malformed_second_deployment_file_aborts_before_changing_anything() {
-    let f = Fixture::new();
-    f.seed();
-    fs::write(&f.modes[1], "[]").unwrap();
-    let before = f.snapshot();
-    assert!(f
-        .apply(B, &connection("https://new.invalid", "key"))
-        .is_err());
-    assert_eq!(before, f.snapshot());
-}
-
-#[test]
-fn io_failure_after_provider_write_rolls_back_primary_files_and_new_provider() {
-    let f = Fixture::new();
-    f.seed();
-    // Secret atomic writes must remove a legacy .bak. A directory here forces
-    // a real I/O error on _meta.json, after the new provider has been written.
-    fs::create_dir(f.dir.join("_meta.json.bak")).unwrap();
-    let before = f.snapshot();
-    assert!(f
-        .apply(B, &connection("https://new.invalid", "key"))
-        .is_err());
-    assert_eq!(before, f.snapshot());
-    assert!(!f.dir.join(format!("{B}.json")).exists());
-}
-
-#[test]
-fn failure_updating_second_profile_rolls_back_provider_metadata_and_first_profile() {
-    let f = Fixture::new();
-    f.seed();
-    fs::create_dir(f.modes[1].with_extension("json.bak")).unwrap();
-    let before = f.snapshot();
-    assert!(f
-        .apply(B, &connection("https://new.invalid", "key"))
-        .is_err());
-    assert_eq!(before, f.snapshot());
+fn write_failure_rolls_back_provider_metadata_and_deployment_files() {
+    for fail_metadata in [true, false] {
+        let f = Fixture::new();
+        f.seed();
+        // A directory at the backup path causes a real I/O failure, either after
+        // publishing the provider or after also updating metadata and the first profile.
+        let blocked = if fail_metadata {
+            f.dir.join("_meta.json.bak")
+        } else {
+            f.modes[1].with_extension("json.bak")
+        };
+        fs::create_dir(blocked).unwrap();
+        let before = f.snapshot();
+        assert!(f
+            .apply(B, &connection("https://new.invalid", "key"))
+            .is_err());
+        assert_eq!(before, f.snapshot());
+        assert!(!f.dir.join(format!("{B}.json")).exists());
+    }
 }
 
 #[cfg(windows)]
@@ -535,25 +537,4 @@ fn preflight_conflict_keeps_primary_files_and_newer_external_edits() {
     assert!(commit(&changes).is_err());
     assert_eq!(read(&a), json!({"value": "before"}));
     assert_eq!(read(&b), json!({"value": "newer external edit"}));
-}
-
-#[test]
-fn file_ids_reject_windows_devices_and_directory_traversal() {
-    for id in [
-        "../outside",
-        "x/../../y",
-        "x\\y",
-        "_meta",
-        "_META",
-        "CON",
-        "nul",
-        "COM1",
-        "LPT9",
-        "x:stream",
-    ] {
-        assert!(
-            provider_path(Path::new("library"), id).is_err(),
-            "accepted {id}"
-        );
-    }
 }

@@ -1,6 +1,6 @@
 //! Preserve Desktop policy while replacing only Cockpit's inference connection.
 use crate::models::claude::{ClaudeAccount, ClaudeAuthMode};
-use crate::modules::atomic_write;
+use crate::modules::{atomic_write, claude_desktop_gateway};
 use serde_json::{json, Value};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -17,39 +17,21 @@ fn normalize_non_empty(value: Option<&str>) -> Option<String> {
         .map(str::to_owned)
 }
 
-pub(crate) fn build_provider_config(account: &ClaudeAccount) -> Result<Value, String> {
+fn build_provider_config(account: &ClaudeAccount) -> Result<Value, String> {
     if account.auth_mode != ClaudeAuthMode::DesktopGateway {
         return Err("账号不是 Claude Gateway 类型".to_string());
     }
-    let connection_mode = crate::modules::claude_desktop_gateway::normalize_connection_mode(
-        account.desktop_gateway_connection_mode.as_deref(),
+    let api_key = normalize_non_empty(account.api_key.as_deref())
+        .ok_or_else(|| "Claude Gateway 账号缺少 API Key".to_string())?;
+    let base_url = normalize_non_empty(account.api_base_url.as_deref())
+        .ok_or_else(|| "Claude Gateway 账号缺少 Base URL".to_string())?;
+    let auth_scheme = claude_desktop_gateway::normalize_auth_scheme(
+        account.desktop_gateway_auth_scheme.as_deref(),
     );
-    let (base_url, api_key, auth_scheme) = if connection_mode == "local_mapping" {
-        let endpoint = crate::modules::claude_desktop_gateway::ensure_gateway_for_account(account)?;
-        (endpoint.base_url, endpoint.api_key, "bearer".to_string())
+    let auth_scheme = if auth_scheme == "auto" {
+        "bearer".to_string()
     } else {
-        let api_key = account
-            .api_key
-            .as_deref()
-            .and_then(|value| normalize_non_empty(Some(value)))
-            .ok_or_else(|| "Claude Gateway 账号缺少 API Key".to_string())?;
-        let base_url = account
-            .api_base_url
-            .as_deref()
-            .and_then(|value| normalize_non_empty(Some(value)))
-            .ok_or_else(|| "Claude Gateway 账号缺少 Base URL".to_string())?;
-        let auth_scheme = crate::modules::claude_desktop_gateway::normalize_auth_scheme(
-            account.desktop_gateway_auth_scheme.as_deref(),
-        );
-        (
-            base_url,
-            api_key.to_string(),
-            if auth_scheme == "auto" {
-                "bearer".to_string()
-            } else {
-                auth_scheme
-            },
-        )
+        auth_scheme
     };
     let credential_kind = account
         .desktop_gateway_credential_kind
@@ -71,7 +53,7 @@ pub(crate) fn build_provider_config(account: &ClaudeAccount) -> Result<Value, St
         .as_ref()
         .filter(|items| !items.is_empty())
     {
-        let mapping_meta = crate::modules::claude_desktop_gateway::normalize_model_mappings(
+        let mapping_meta = claude_desktop_gateway::normalize_model_mappings(
             account.desktop_gateway_model_mappings.clone(),
         )
         .unwrap_or_default()
@@ -102,6 +84,41 @@ pub(crate) fn build_provider_config(account: &ClaudeAccount) -> Result<Value, St
         );
     }
     Ok(config)
+}
+
+pub(crate) fn apply_account(
+    dir: &Path,
+    deployment_paths: &[PathBuf],
+    config_id: &str,
+    account: &ClaudeAccount,
+    known_ids: &BTreeSet<String>,
+) -> Result<(), String> {
+    let mut config = build_provider_config(account)?;
+    let entry_name =
+        normalize_non_empty(Some(&account.email)).unwrap_or_else(|| "Default".to_string());
+    let save = |config: &Value| {
+        apply(
+            dir,
+            deployment_paths,
+            config_id,
+            &entry_name,
+            config,
+            known_ids,
+        )
+    };
+    if claude_desktop_gateway::normalize_connection_mode(
+        account.desktop_gateway_connection_mode.as_deref(),
+    ) == "local_mapping"
+    {
+        claude_desktop_gateway::apply_gateway_for_account(account, |endpoint| {
+            config["inferenceGatewayBaseUrl"] = json!(endpoint.base_url);
+            config["inferenceGatewayApiKey"] = json!(endpoint.api_key);
+            config["inferenceGatewayAuthScheme"] = json!("bearer");
+            save(&config)
+        })
+    } else {
+        save(&config)
+    }
 }
 
 fn valid_id(id: &str) -> bool {
@@ -331,14 +348,48 @@ fn managed_ids(entries: &[Value], known_ids: &BTreeSet<String>) -> BTreeSet<Stri
     ids
 }
 
-fn retire(change: &mut Change, obsolete: &mut Vec<Change>) -> Result<(), String> {
-    // Older writers created plaintext backups. Remove only backups of entries
-    // whose ownership and provider type have already been checked.
-    let mut backup = Change::read(change.path.with_extension("json.bak"))?;
-    backup.after = None;
-    obsolete.push(backup);
-    change.after = None;
-    Ok(())
+fn retire_managed(
+    dir: &Path,
+    entries: &mut Vec<Value>,
+    known_ids: &BTreeSet<String>,
+    keep: Option<&Path>,
+    source: Option<&Change>,
+) -> Result<(Vec<Change>, BTreeSet<String>), String> {
+    let mut changes: Vec<Change> = Vec::new();
+    let mut removed = BTreeSet::new();
+    for id in managed_ids(entries, known_ids) {
+        let path = provider_path(dir, &id)?;
+        if keep.is_some_and(|keep| same_provider_path(&path, keep)) {
+            continue;
+        }
+        if changes
+            .iter()
+            .any(|change| same_provider_path(&change.path, &path))
+        {
+            removed.insert(id);
+            continue;
+        }
+        let mut change = match source {
+            Some(source) if same_provider_path(&source.path, &path) => source.clone(),
+            _ => Change::read(path)?,
+        };
+        if change.before.is_none() || is_gateway(&change.json()?) {
+            // Older writers left plaintext backups. Only retire those belonging
+            // to a known Cockpit Gateway, along with its primary file.
+            let mut backup = Change::read(change.path.with_extension("json.bak"))?;
+            backup.after = None;
+            change.after = None;
+            changes.extend([backup, change]);
+            removed.insert(id);
+        }
+    }
+    entries.retain(|entry| {
+        !entry
+            .get("id")
+            .and_then(Value::as_str)
+            .is_some_and(|id| removed.contains(id))
+    });
+    Ok((changes, removed))
 }
 
 fn deployment_changes(paths: &[PathBuf], mode: &str) -> Result<Vec<Change>, String> {
@@ -356,7 +407,7 @@ fn deployment_changes(paths: &[PathBuf], mode: &str) -> Result<Vec<Change>, Stri
 
 /// `known_ids` comes from persisted Gateway accounts, allowing safe migration of
 /// pre-marker entries. Provider type alone is never proof of Cockpit ownership.
-pub(crate) fn apply(
+fn apply(
     dir: &Path,
     deployment_paths: &[PathBuf],
     config_id: &str,
@@ -393,36 +444,13 @@ pub(crate) fn apply(
     };
     target.set_json(&merge_provider_config(source, generated)?)?;
 
-    let mut obsolete = Vec::new();
-    let mut removed = BTreeSet::new();
-    for id in &owned {
-        let path = provider_path(dir, id)?;
-        if same_provider_path(&path, &target.path) {
-            continue;
-        }
-        if obsolete
-            .iter()
-            .any(|change: &Change| same_provider_path(&change.path, &path))
-        {
-            removed.insert(id.clone());
-            continue;
-        }
-        let mut change = match &source_change {
-            Some(source) if same_provider_path(&source.path, &path) => source.clone(),
-            _ => Change::read(path)?,
-        };
-        if change.before.is_none() || is_gateway(&change.json()?) {
-            retire(&mut change, &mut obsolete)?;
-            obsolete.push(change);
-            removed.insert(id.clone());
-        }
-    }
-    entries.retain(|entry| {
-        !entry
-            .get("id")
-            .and_then(Value::as_str)
-            .is_some_and(|id| removed.contains(id))
-    });
+    let (obsolete, _) = retire_managed(
+        dir,
+        &mut entries,
+        known_ids,
+        Some(&target.path),
+        source_change.as_ref(),
+    )?;
     if let Some(entry) = entries.iter_mut().find(|entry| {
         entry
             .get("id")
@@ -475,31 +503,7 @@ pub(crate) fn remove_managed(
     let mut meta_change = Change::read(dir.join("_meta.json"))?;
     let mut meta = meta_change.json()?;
     let mut entries = entries(&meta)?;
-    let owned = managed_ids(&entries, known_ids);
-    let mut removed = BTreeSet::new();
-    let mut obsolete = Vec::new();
-    for id in &owned {
-        let path = provider_path(dir, id)?;
-        if obsolete
-            .iter()
-            .any(|change: &Change| same_provider_path(&change.path, &path))
-        {
-            removed.insert(id.clone());
-            continue;
-        }
-        let mut change = Change::read(path)?;
-        if change.before.is_none() || is_gateway(&change.json()?) {
-            retire(&mut change, &mut obsolete)?;
-            obsolete.push(change);
-            removed.insert(id.clone());
-        }
-    }
-    entries.retain(|entry| {
-        !entry
-            .get("id")
-            .and_then(Value::as_str)
-            .is_some_and(|id| removed.contains(id))
-    });
+    let (obsolete, removed) = retire_managed(dir, &mut entries, known_ids, None, None)?;
     if meta
         .get("appliedId")
         .and_then(Value::as_str)

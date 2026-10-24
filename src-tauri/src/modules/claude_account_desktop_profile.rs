@@ -1576,19 +1576,11 @@ fn write_desktop_gateway_config_library(
         .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
     let mut known_ids = desktop_gateway_managed_config_ids()?;
     known_ids.insert(config_id.clone());
-    let account_name = account.email.trim();
-    let entry_name = if account_name.is_empty() {
-        "Default"
-    } else {
-        account_name
-    };
-    let generated = crate::modules::claude_desktop_gateway_config::build_provider_config(account)?;
-    crate::modules::claude_desktop_gateway_config::apply(
+    crate::modules::claude_desktop_gateway_config::apply_account(
         config_library_dir,
         deployment_paths,
         &config_id,
-        entry_name,
-        &generated,
+        account,
         &known_ids,
     )?;
     Ok(config_id)
