@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Clear all published announcements so old notices and automatic announcement popups disappear after a successful client refresh.
+
 ## [1.3.74] - 2026-10-24
 
 ### Fixed
