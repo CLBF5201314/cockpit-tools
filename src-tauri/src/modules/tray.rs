@@ -968,11 +968,15 @@ fn normalize_antigravity_model_for_match(value: &str) -> String {
     if normalized.is_empty() {
         return normalized;
     }
-    if normalized.starts_with("gemini-3.1-flash")
+    if normalized.starts_with("gemini-4-argon") || normalized.contains("argon") {
+        return "gemini-4-argon".to_string();
+    }
+    if normalized.starts_with("gemini-3.8-flash")
+        || normalized.starts_with("gemini-3.1-flash")
         || normalized.starts_with("gemini-2.5-flash")
         || normalized.starts_with("gemini-3-flash")
     {
-        return "gemini-3-flash".to_string();
+        return "gemini-3.8-flash".to_string();
     }
     if normalized.starts_with("gemini-3.1-pro-high") || normalized.starts_with("gemini-3-pro-high")
     {
@@ -981,20 +985,26 @@ fn normalize_antigravity_model_for_match(value: &str) -> String {
     if normalized.starts_with("gemini-3.1-pro-low") || normalized.starts_with("gemini-3-pro-low") {
         return "gemini-3.1-pro-low".to_string();
     }
-    if normalized.starts_with("claude-sonnet-4-6") || normalized.starts_with("claude-sonnet-4-5") {
-        return "claude-sonnet-4-6".to_string();
+    if normalized.starts_with("claude-sonnet-5-5")
+        || normalized.starts_with("claude-sonnet-4-6")
+        || normalized.starts_with("claude-sonnet-4-5")
+    {
+        return "claude-sonnet-5-5".to_string();
     }
-    if normalized.starts_with("claude-opus-4-6-thinking")
+    if normalized.starts_with("claude-opus-5-5")
+        || normalized.starts_with("claude-opus-4-6-thinking")
         || normalized.starts_with("claude-opus-4-5-thinking")
     {
-        return "claude-opus-4-6-thinking".to_string();
+        return "claude-opus-5-5".to_string();
     }
     match normalized.as_str() {
         "gemini-3-pro-high" => "gemini-3.1-pro-high".to_string(),
         "gemini-3-pro-low" => "gemini-3.1-pro-low".to_string(),
-        "claude-sonnet-4-5" => "claude-sonnet-4-6".to_string(),
-        "claude-sonnet-4-5-thinking" => "claude-sonnet-4-6".to_string(),
-        "claude-opus-4-5-thinking" => "claude-opus-4-6-thinking".to_string(),
+        "claude-sonnet-4-5" => "claude-sonnet-5-5".to_string(),
+        "claude-sonnet-4-5-thinking" => "claude-sonnet-5-5".to_string(),
+        "claude-sonnet-4-6" => "claude-sonnet-5-5".to_string(),
+        "claude-opus-4-5-thinking" => "claude-opus-5-5".to_string(),
+        "claude-opus-4-6-thinking" => "claude-opus-5-5".to_string(),
         _ => normalized,
     }
 }
