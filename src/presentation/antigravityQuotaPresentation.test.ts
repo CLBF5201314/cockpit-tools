@@ -169,3 +169,14 @@ test('AntigravityQuotaSection renders cachedNeedsReauth warning when isNeedsReau
   assert.doesNotMatch(htmlNormal, /quota-reauth-warning/);
 });
 
+test('model display names strip parentheses and match new models correctly', async () => {
+  const { getAntigravityModelDisplayName } = await import('../utils/antigravityModels');
+  const { getModelDisplayName } = await import('../utils/modelNames');
+  assert.equal(getAntigravityModelDisplayName('gemini-4-argon'), 'Gemini 4 Argon');
+  assert.equal(getAntigravityModelDisplayName('gemini-3.8-flash-high'), 'Gemini 3.8 Flash');
+  assert.equal(getAntigravityModelDisplayName('claude-opus-5-5-medium'), 'Claude Opus 5.5');
+  assert.equal(getAntigravityModelDisplayName('claude-sonnet-5-5-medium'), 'Claude Sonnet 5.5');
+  assert.equal(getAntigravityModelDisplayName('gpt-oss-120b-medium'), 'GPT-OSS 120B');
+  assert.equal(getModelDisplayName('gemini-4-argon'), 'Gemini 4 Argon');
+  assert.equal(getModelDisplayName('gemini-3.8-flash'), 'Gemini 3.8 Flash');
+});

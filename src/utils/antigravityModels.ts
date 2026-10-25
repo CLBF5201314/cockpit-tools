@@ -16,46 +16,40 @@ interface ModelIdentity {
 interface CanonicalModel {
   id: string;
   displayName: string;
-  modelConstant: string;
+  modelConstant: string | null;
   aliases: string[];
 }
 
 const CANONICAL_MODELS: CanonicalModel[] = [
   {
-    id: 'gemini-3.1-pro-high',
-    displayName: 'Gemini 3.1 Pro (High)',
-    modelConstant: 'MODEL_PLACEHOLDER_M37',
-    aliases: ['gemini-3-pro-high', 'MODEL_PLACEHOLDER_M8'],
+    id: 'gemini-4-argon',
+    displayName: 'Gemini 4 Argon',
+    modelConstant: null,
+    aliases: ['gemini-4-argon-medium', 'gemini-4-argon-high', 'gemini-argon-wtu-weekly', 'argon:weekly'],
   },
   {
-    id: 'gemini-3.1-pro-low',
-    displayName: 'Gemini 3.1 Pro (Low)',
-    modelConstant: 'MODEL_PLACEHOLDER_M36',
-    aliases: ['gemini-3-pro-low', 'MODEL_PLACEHOLDER_M7'],
+    id: 'gemini-3.8-flash-high',
+    displayName: 'Gemini 3.8 Flash',
+    modelConstant: 'MODEL_PLACEHOLDER_M318',
+    aliases: ['gemini-3.8-flash', 'gemini-3.8-flash-medium', 'gemini-3.8-flash-low', 'gemini-3-flash'],
   },
   {
-    id: 'gemini-3-flash',
-    displayName: 'Gemini 3 Flash',
-    modelConstant: 'MODEL_PLACEHOLDER_M18',
-    aliases: [],
+    id: 'claude-sonnet-5-5-medium',
+    displayName: 'Claude Sonnet 5.5',
+    modelConstant: null,
+    aliases: ['claude-sonnet-5-5', 'claude-sonnet-5-5-high', 'claude-sonnet-5-5-max', 'claude-sonnet-5-5-low', 'claude-sonnet-4-6'],
   },
   {
-    id: 'claude-sonnet-4-6',
-    displayName: 'Claude Sonnet 4.6 (Thinking)',
-    modelConstant: 'MODEL_PLACEHOLDER_M35',
-    aliases: ['claude-sonnet-4-6-thinking', 'claude-sonnet-4-5', 'claude-sonnet-4-5-thinking'],
-  },
-  {
-    id: 'claude-opus-4-6-thinking',
-    displayName: 'Claude Opus 4.6 (Thinking)',
-    modelConstant: 'MODEL_PLACEHOLDER_M26',
-    aliases: ['claude-opus-4-6', 'claude-opus-4-5-thinking', 'MODEL_PLACEHOLDER_M12'],
+    id: 'claude-opus-5-5-medium',
+    displayName: 'Claude Opus 5.5',
+    modelConstant: null,
+    aliases: ['claude-opus-5-5', 'claude-opus-5-5-high', 'claude-opus-5-5-thinking', 'claude-opus-4-6-thinking'],
   },
   {
     id: 'gpt-oss-120b-medium',
-    displayName: 'GPT-OSS 120B (Medium)',
+    displayName: 'GPT-OSS 120B',
     modelConstant: 'MODEL_OPENAI_GPT_OSS_120B_MEDIUM',
-    aliases: [],
+    aliases: ['gpt-oss-120b'],
   },
 ];
 
@@ -98,7 +92,8 @@ const resolveCanonicalModel = (identity: ModelIdentity): CanonicalModel | undefi
 
 export const getAntigravityModelDisplayName = (value: string): string => {
   const found = resolveCanonicalModel({ id: value, modelConstant: value, displayName: value });
-  return found?.displayName || value;
+  const raw = found?.displayName || value || '';
+  return raw.replace(/\s*\([^)]*\)/g, '').trim();
 };
 
 export const filterAntigravityModelOptions = (

@@ -8,15 +8,28 @@
 /** 模型 ID 到显示名称的映射（支持两种格式） */
 const MODEL_DISPLAY_NAMES: Record<string, string> = {
   // 桌面端格式（小写）
-  'claude-opus-4-5-thinking': 'Claude Opus 4.5 (Thinking)',
-  'claude-opus-4-6-thinking': 'Claude Opus 4.6 (Thinking)',
+  'gemini-4-argon': 'Gemini 4 Argon',
+  'gemini-4-argon-medium': 'Gemini 4 Argon',
+  'gemini-4-argon-high': 'Gemini 4 Argon',
+  'gemini-3.8-flash': 'Gemini 3.8 Flash',
+  'gemini-3.8-flash-high': 'Gemini 3.8 Flash',
+  'gemini-3.8-flash-medium': 'Gemini 3.8 Flash',
+  'gemini-3.8-flash-low': 'Gemini 3.8 Flash',
+  'claude-opus-5-5': 'Claude Opus 5.5',
+  'claude-opus-5-5-medium': 'Claude Opus 5.5',
+  'claude-opus-5-5-high': 'Claude Opus 5.5',
+  'claude-sonnet-5-5': 'Claude Sonnet 5.5',
+  'claude-sonnet-5-5-medium': 'Claude Sonnet 5.5',
+  'claude-sonnet-5-5-high': 'Claude Sonnet 5.5',
+  'claude-opus-4-5-thinking': 'Claude Opus 4.5',
+  'claude-opus-4-6-thinking': 'Claude Opus 4.6',
   'claude-sonnet-4-5': 'Claude Sonnet 4.5',
-  'claude-sonnet-4-5-thinking': 'Claude Sonnet 4.5 (Thinking)',
+  'claude-sonnet-4-5-thinking': 'Claude Sonnet 4.5',
   'gemini-3-flash': 'Gemini 3 Flash',
-  'gemini-3-pro-high': 'Gemini 3 Pro (High)',
-  'gemini-3-pro-low': 'Gemini 3 Pro (Low)',
+  'gemini-3-pro-high': 'Gemini 3 Pro',
+  'gemini-3-pro-low': 'Gemini 3 Pro',
   'gemini-3-pro-image': 'Gemini 3 Pro Image',
-  'gpt-oss-120b-medium': 'GPT-OSS 120B (Medium)',
+  'gpt-oss-120b-medium': 'GPT-OSS 120B',
   'gpt-6.1-sol': 'GPT-6.1 Sol',
   'gpt-6-astra': 'GPT-6 Astra',
   'gpt-6-sol': 'GPT-6 Sol',
@@ -24,19 +37,20 @@ const MODEL_DISPLAY_NAMES: Record<string, string> = {
   // Gemini 2.5 系列
   'gemini-2.5-flash': 'Gemini 2.5 Flash',
   'gemini-2.5-flash-lite': 'Gemini 2.5 Flash Lite',
-  'gemini-2.5-flash-thinking': 'Gemini 2.5 Flash (Thinking)',
+  'gemini-2.5-flash-thinking': 'Gemini 2.5 Flash',
   'gemini-2.5-pro': 'Gemini 2.5 Pro',
   
   // 插件端格式（大写）
-  'MODEL_PLACEHOLDER_M12': 'Claude Opus 4.5 (Thinking)',
-  'MODEL_PLACEHOLDER_M26': 'Claude Opus 4.6 (Thinking)',
+  'MODEL_PLACEHOLDER_M12': 'Claude Opus 4.5',
+  'MODEL_PLACEHOLDER_M26': 'Claude Opus 4.6',
   'MODEL_CLAUDE_4_5_SONNET': 'Claude Sonnet 4.5',
-  'MODEL_CLAUDE_4_5_SONNET_THINKING': 'Claude Sonnet 4.5 (Thinking)',
+  'MODEL_CLAUDE_4_5_SONNET_THINKING': 'Claude Sonnet 4.5',
+  'MODEL_PLACEHOLDER_M318': 'Gemini 3.8 Flash',
   'MODEL_PLACEHOLDER_M18': 'Gemini 3 Flash',
-  'MODEL_PLACEHOLDER_M7': 'Gemini 3 Pro (High)',
-  'MODEL_PLACEHOLDER_M8': 'Gemini 3 Pro (Low)',
+  'MODEL_PLACEHOLDER_M7': 'Gemini 3 Pro',
+  'MODEL_PLACEHOLDER_M8': 'Gemini 3 Pro',
   'MODEL_PLACEHOLDER_M9': 'Gemini 3 Pro Image',
-  'MODEL_OPENAI_GPT_OSS_120B_MEDIUM': 'GPT-OSS 120B (Medium)',
+  'MODEL_OPENAI_GPT_OSS_120B_MEDIUM': 'GPT-OSS 120B',
 };
 
 /**
@@ -104,15 +118,11 @@ const DEFAULT_GROUP_PREFIX_MATCHERS: Record<string, GroupPrefixMatcher> = {
  * @returns 友好的显示名称
  */
 export function getModelDisplayName(modelId: string): string {
-  if (MODEL_DISPLAY_NAMES[modelId]) {
-    return MODEL_DISPLAY_NAMES[modelId];
-  }
-  
-  // 格式化未知模型名
-  return modelId
+  const name = MODEL_DISPLAY_NAMES[modelId] || modelId
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+  return name.replace(/\s*\([^)]*\)/g, '').trim();
 }
 
 /**
