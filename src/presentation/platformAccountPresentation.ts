@@ -535,6 +535,15 @@ export function getAntigravityQuotaDisplayItems(
     const name = rawName.toLowerCase();
     return name.includes('gemini') && !name.includes('argon');
   };
+  const isArgonWeeklyModel = (rawName: string) => {
+    const name = rawName.toLowerCase();
+    return (
+      rawName === 'gemini-argon-wtu-weekly' ||
+      rawName === 'argon:weekly' ||
+      (rawName.startsWith('gemini-argon-') && rawName.endsWith('-weekly')) ||
+      name.includes('argon')
+    );
+  };
 
   let claude5h: (typeof models)[0] | undefined;
   let claudeWeekly: (typeof models)[0] | undefined;
@@ -558,7 +567,7 @@ export function getAntigravityQuotaDisplayItems(
           m.name === 'gemini-argon-wtu-weekly' ||
           m.name === 'argon:weekly' ||
           (m.name.startsWith('gemini-argon-') && m.name.endsWith('-weekly')),
-      ) || models.find((m) => m.name.toLowerCase().includes('argon'));
+      ) || models.find((m) => isArgonWeeklyModel(m.name));
   } else {
     // Claude 5h
     claude5h = models.find((m) => m.name === '3p-5h' || m.name === 'claude:5h');
@@ -633,7 +642,7 @@ export function getAntigravityQuotaDisplayItems(
           m.name === 'gemini-argon-wtu-weekly' ||
           m.name === 'argon:weekly' ||
           (m.name.startsWith('gemini-argon-') && m.name.endsWith('-weekly')),
-      ) || models.find((m) => m.name.toLowerCase().includes('argon'));
+      ) || models.find((m) => isArgonWeeklyModel(m.name));
   }
 
   if (claude5h) {
@@ -682,7 +691,10 @@ export function getAntigravityQuotaDisplayItems(
     });
   }
 
-  return result;
+  return result.map((item) => ({
+    ...item,
+    label: item.label.replace(/\s*\((?!5h\b|weekly\b)[^)]*\)/gi, '').trim(),
+  }));
 }
 
 export function buildAntigravityAccountPresentation(

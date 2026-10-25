@@ -180,3 +180,14 @@ test('model display names strip parentheses and match new models correctly', asy
   assert.equal(getModelDisplayName('gemini-4-argon'), 'Gemini 4 Argon');
   assert.equal(getModelDisplayName('gemini-3.8-flash'), 'Gemini 3.8 Flash');
 });
+
+test('argonWeekly matches all expected patterns and labels are sanitized', () => {
+  const patterns = ['gemini-argon-wtu-weekly', 'argon:weekly', 'gemini-argon-foo-weekly', 'gemini-4-argon-high'];
+  for (const name of patterns) {
+    const items = getAntigravityQuotaDisplayItems(account([model(name, 88)]), []);
+    const argonItem = items.find((i) => i.key === 'argon:weekly');
+    assert.ok(argonItem, `Expected argon:weekly item for model name ${name}`);
+    assert.equal(argonItem?.label, 'Gemini 4 Argon (Weekly)');
+    assert.equal(argonItem?.percentage, 88);
+  }
+});
