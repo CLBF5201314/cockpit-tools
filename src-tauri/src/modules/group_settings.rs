@@ -23,6 +23,7 @@ const GROUP_SETTINGS_FILE: &str = "group_settings.json";
 const LEGACY_GROUP_NAME_G3_PRO: &str = "G3-Pro";
 const LEGACY_GROUP_NAME_G3_FLASH: &str = "G3-Flash";
 
+const GROUP_NAME_GEMINI_ARGON: &str = "Gemini 4 Argon";
 const GROUP_NAME_GEMINI_PRO: &str = "Gemini Pro";
 const GROUP_NAME_GEMINI_FLASH: &str = "Gemini Flash";
 
@@ -74,7 +75,33 @@ impl Default for GroupSettings {
         let mut group_mappings = HashMap::new();
         let mut group_names = HashMap::new();
 
-        // Claude 4.5 分组
+        // Gemini 4 Argon 分组
+        group_mappings.insert("gemini-4-argon".to_string(), "g4_argon".to_string());
+        group_mappings.insert(
+            "gemini-4-argon-medium".to_string(),
+            "g4_argon".to_string(),
+        );
+        group_mappings.insert(
+            "gemini-4-argon-high".to_string(),
+            "g4_argon".to_string(),
+        );
+        group_names.insert("g4_argon".to_string(), GROUP_NAME_GEMINI_ARGON.to_string());
+
+        // Gemini Flash 分组
+        group_mappings.insert("gemini-3.8-flash-high".to_string(), "g3_flash".to_string());
+        group_mappings.insert("gemini-3.8-flash".to_string(), "g3_flash".to_string());
+        group_mappings.insert("gemini-3-flash".to_string(), "g3_flash".to_string());
+        group_names.insert("g3_flash".to_string(), GROUP_NAME_GEMINI_FLASH.to_string());
+
+        // Claude 分组
+        group_mappings.insert(
+            "claude-opus-5-5-medium".to_string(),
+            "claude_45".to_string(),
+        );
+        group_mappings.insert(
+            "claude-sonnet-5-5-medium".to_string(),
+            "claude_45".to_string(),
+        );
         group_mappings.insert(
             "claude-opus-4-5-thinking".to_string(),
             "claude_45".to_string(),
@@ -90,23 +117,12 @@ impl Default for GroupSettings {
             "claude_45".to_string(),
         );
         group_mappings.insert("gpt-oss-120b-medium".to_string(), "claude_45".to_string());
-        group_names.insert("claude_45".to_string(), "Claude 4.5".to_string());
-
-        // Gemini Pro 分组
-        group_mappings.insert("gemini-3-pro-high".to_string(), "g3_pro".to_string());
-        group_mappings.insert("gemini-3-pro-low".to_string(), "g3_pro".to_string());
-        group_mappings.insert("gemini-3.1-pro-high".to_string(), "g3_pro".to_string());
-        group_mappings.insert("gemini-3.1-pro-low".to_string(), "g3_pro".to_string());
-        group_names.insert("g3_pro".to_string(), GROUP_NAME_GEMINI_PRO.to_string());
-
-        // Gemini Flash 分组
-        group_mappings.insert("gemini-3-flash".to_string(), "g3_flash".to_string());
-        group_names.insert("g3_flash".to_string(), GROUP_NAME_GEMINI_FLASH.to_string());
+        group_names.insert("claude_45".to_string(), "Claude".to_string());
 
         let group_order = vec![
-            "claude_45".to_string(),
-            "g3_pro".to_string(),
+            "g4_argon".to_string(),
             "g3_flash".to_string(),
+            "claude_45".to_string(),
         ];
 
         Self {
@@ -365,38 +381,38 @@ mod tests {
         assert_eq!(
             settings.group_order,
             vec![
-                "claude_45".to_string(),
-                "g3_pro".to_string(),
+                "g4_argon".to_string(),
                 "g3_flash".to_string(),
+                "claude_45".to_string(),
             ]
         );
 
         assert_eq!(
-            settings.group_names.get("claude_45").map(String::as_str),
-            Some("Claude 4.5")
-        );
-        assert_eq!(
-            settings.group_names.get("g3_pro").map(String::as_str),
-            Some(GROUP_NAME_GEMINI_PRO)
+            settings.group_names.get("g4_argon").map(String::as_str),
+            Some(GROUP_NAME_GEMINI_ARGON)
         );
         assert_eq!(
             settings.group_names.get("g3_flash").map(String::as_str),
             Some(GROUP_NAME_GEMINI_FLASH)
         );
+        assert_eq!(
+            settings.group_names.get("claude_45").map(String::as_str),
+            Some("Claude")
+        );
 
         assert_eq!(
             settings
                 .group_mappings
-                .get("claude-sonnet-4-5")
+                .get("gemini-4-argon")
                 .map(String::as_str),
-            Some("claude_45")
+            Some("g4_argon")
         );
         assert_eq!(
             settings
                 .group_mappings
-                .get("gemini-3-pro-high")
+                .get("gemini-3.8-flash-high")
                 .map(String::as_str),
-            Some("g3_pro")
+            Some("g3_flash")
         );
         assert_eq!(
             settings
@@ -404,6 +420,20 @@ mod tests {
                 .get("gemini-3-flash")
                 .map(String::as_str),
             Some("g3_flash")
+        );
+        assert_eq!(
+            settings
+                .group_mappings
+                .get("claude-opus-5-5-medium")
+                .map(String::as_str),
+            Some("claude_45")
+        );
+        assert_eq!(
+            settings
+                .group_mappings
+                .get("claude-sonnet-5-5-medium")
+                .map(String::as_str),
+            Some("claude_45")
         );
     }
 

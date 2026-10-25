@@ -91,25 +91,24 @@ const AUTH_MODEL_BLACKLIST_NAME_SET = new Set(
 );
 
 // 按模型家族分组，忽略具体版本号（如 Gemini 3.1 / 4 / 4.5）
-const GEMINI_ANY_PRO_TIER_ID_PATTERN = /^gemini-\d+(?:\.\d+)?-pro-(high|low)(?:-|$)/;
-const GEMINI_ANY_FLASH_ID_PATTERN = /^gemini-\d+(?:\.\d+)?-flash(?:-|$)/;
-
-const GEMINI_ANY_PRO_TIER_NAME_PATTERN = /^gemini \d+(?:\.\d+)? pro(?: \((high|low)\)| (high|low))\b/;
-const GEMINI_ANY_FLASH_NAME_PATTERN = /^gemini \d+(?:\.\d+)? flash\b/;
+const GEMINI_ARGON_ID_PATTERN = /(?:^|[-_])argon(?:[-_]|$)/i;
+const GEMINI_ANY_FLASH_ID_PATTERN = /^gemini-\d+(?:\.\d+)?-flash(?:-|$)/i;
 
 type GroupPrefixMatcher = (normalizedModelId: string, normalizedModelName: string) => boolean;
 
 const DEFAULT_GROUP_PREFIX_MATCHERS: Record<string, GroupPrefixMatcher> = {
+  g4_argon: (normalizedModelId, normalizedModelName) =>
+    GEMINI_ARGON_ID_PATTERN.test(normalizedModelId) ||
+    normalizedModelName.toLowerCase().includes('argon'),
+  g3_flash: (normalizedModelId, normalizedModelName) =>
+    GEMINI_ANY_FLASH_ID_PATTERN.test(normalizedModelId) ||
+    normalizedModelName.toLowerCase().includes('flash'),
   claude_45: (normalizedModelId, normalizedModelName) =>
     normalizedModelId.startsWith('claude-') ||
     normalizedModelId.startsWith('model_claude') ||
-    normalizedModelName.startsWith('claude '),
-  g3_pro: (normalizedModelId, normalizedModelName) =>
-    GEMINI_ANY_PRO_TIER_ID_PATTERN.test(normalizedModelId) ||
-    GEMINI_ANY_PRO_TIER_NAME_PATTERN.test(normalizedModelName),
-  g3_flash: (normalizedModelId, normalizedModelName) =>
-    GEMINI_ANY_FLASH_ID_PATTERN.test(normalizedModelId) ||
-    GEMINI_ANY_FLASH_NAME_PATTERN.test(normalizedModelName),
+    normalizedModelId.startsWith('gpt-oss') ||
+    normalizedModelName.toLowerCase().includes('claude') ||
+    normalizedModelName.toLowerCase().includes('gpt'),
 };
 
 /**
@@ -185,43 +184,41 @@ function matchesDefaultGroupPrefixRule(
 export function getDefaultGroups(): DefaultGroup[] {
   return [
     {
-      id: 'claude_45',
-      name: 'Claude 4.5',
-      desktopModels: [
-        'claude-opus-4-5-thinking',
-        'claude-opus-4-6-thinking',
-        'claude-sonnet-4-5',
-        'claude-sonnet-4-5-thinking',
-        'gpt-oss-120b-medium',
-      ],
-      pluginModels: [
-        'MODEL_PLACEHOLDER_M12',
-        'MODEL_PLACEHOLDER_M26',
-        'MODEL_CLAUDE_4_5_SONNET',
-        'MODEL_CLAUDE_4_5_SONNET_THINKING',
-        'MODEL_OPENAI_GPT_OSS_120B_MEDIUM',
-      ],
-    },
-    {
-      id: 'g3_pro',
-      name: 'Gemini Pro',
-      desktopModels: [
-        'gemini-3-pro-high',
-        'gemini-3-pro-low',
-      ],
-      pluginModels: [
-        'MODEL_PLACEHOLDER_M7',
-        'MODEL_PLACEHOLDER_M8',
-      ],
+      id: 'g4_argon',
+      name: 'Gemini 4 Argon',
+      desktopModels: ['gemini-4-argon', 'gemini-4-argon-medium', 'gemini-4-argon-high'],
+      pluginModels: [],
     },
     {
       id: 'g3_flash',
       name: 'Gemini Flash',
       desktopModels: [
+        'gemini-3.8-flash-high',
+        'gemini-3.8-flash-medium',
+        'gemini-3.8-flash-low',
+        'gemini-3.8-flash',
         'gemini-3-flash',
       ],
+      pluginModels: ['MODEL_PLACEHOLDER_M318', 'MODEL_PLACEHOLDER_M18'],
+    },
+    {
+      id: 'claude_45',
+      name: 'Claude',
+      desktopModels: [
+        'claude-opus-5-5-medium',
+        'claude-opus-5-5-high',
+        'claude-opus-5-5',
+        'claude-sonnet-5-5-medium',
+        'claude-sonnet-5-5-high',
+        'claude-sonnet-5-5',
+        'claude-sonnet-4-6',
+        'claude-opus-4-6-thinking',
+        'gpt-oss-120b-medium',
+      ],
       pluginModels: [
-        'MODEL_PLACEHOLDER_M18',
+        'MODEL_PLACEHOLDER_M26',
+        'MODEL_PLACEHOLDER_M35',
+        'MODEL_OPENAI_GPT_OSS_120B_MEDIUM',
       ],
     },
   ];
