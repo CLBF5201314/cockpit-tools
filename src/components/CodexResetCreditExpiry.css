@@ -19,4 +19,4 @@
 .codex-reset-credit-expiry:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .codex-reset-credit-expiry.is-urgent { color: var(--danger); font-weight: 600; }
 .codex-reset-credit-expiry:disabled { cursor: not-allowed; opacity: 0.7; }
-.codex-account-reset-expiry-line { grid-column: 1 / -1; margin: 0; min-width: 0; }
+.codex-account-reset-expiry-line { margin: 6px 0; min-width: 0; }
