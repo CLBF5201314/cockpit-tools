@@ -3204,7 +3204,12 @@
       "codeReview": "Rà soát mã",
       "codeReviewShort": "Rà soát",
       "monthlyCreditsHint": "Tín dụng tháng còn lại",
-      "monthlyCreditsInline": "Tín dụng: {{value}}"
+      "monthlyCreditsInline": "Tín dụng: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} giờ {{minutes}} phút",
+      "resetCreditExpiryMinutes": "{{minutes}} phút",
+      "resetCreditExpiryExpired": "Đã hết hạn · chi tiết",
+      "resetCreditExpiryUrgent": "Sắp hết hạn: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Hết hạn {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Lỗi quota",

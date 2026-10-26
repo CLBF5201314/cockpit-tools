@@ -3251,7 +3251,12 @@
       "codeReview": "مراجعة الرمز",
       "codeReviewShort": "مراجعة",
       "monthlyCreditsHint": "الرصيد الشهري المتبقي",
-      "monthlyCreditsInline": "رصيد: {{value}}"
+      "monthlyCreditsInline": "رصيد: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} س {{minutes}} د",
+      "resetCreditExpiryMinutes": "{{minutes}} د",
+      "resetCreditExpiryExpired": "منتهية · عرض التفاصيل",
+      "resetCreditExpiryUrgent": "تنتهي قريبًا: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "تنتهي {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "خطأ في الحصة",

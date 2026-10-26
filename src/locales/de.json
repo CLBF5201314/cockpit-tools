@@ -3204,7 +3204,12 @@
       "codeReview": "Codeprüfung",
       "codeReviewShort": "Prüfung",
       "monthlyCreditsHint": "Verbleibende monatliche Credits",
-      "monthlyCreditsInline": "Credits: {{value}}"
+      "monthlyCreditsInline": "Credits: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} Std. {{minutes}} Min.",
+      "resetCreditExpiryMinutes": "{{minutes}} Min.",
+      "resetCreditExpiryExpired": "Abgelaufen · Details",
+      "resetCreditExpiryUrgent": "Läuft bald ab: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Läuft ab: {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Kontingentfehler",

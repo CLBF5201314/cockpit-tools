@@ -3335,7 +3335,12 @@
       "codeReview": "程式碼審查",
       "codeReviewShort": "審閱",
       "monthlyCreditsHint": "本月 credits 剩餘",
-      "monthlyCreditsInline": "Credits：{{value}}"
+      "monthlyCreditsInline": "Credits：{{value}}",
+      "resetCreditExpiryHours": "{{hours}}時{{minutes}}分",
+      "resetCreditExpiryMinutes": "{{minutes}}分",
+      "resetCreditExpiryExpired": "已到期 · 查看詳情",
+      "resetCreditExpiryUrgent": "將到期 {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "到期 {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "配額異常",

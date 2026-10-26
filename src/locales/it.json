@@ -3204,7 +3204,12 @@
       "codeReview": "Revisione codice",
       "codeReviewShort": "Revisione",
       "monthlyCreditsHint": "Crediti mensili rimanenti",
-      "monthlyCreditsInline": "Crediti: {{value}}"
+      "monthlyCreditsInline": "Crediti: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} h {{minutes}} min",
+      "resetCreditExpiryMinutes": "{{minutes}} min",
+      "resetCreditExpiryExpired": "Scaduto · dettagli",
+      "resetCreditExpiryUrgent": "Scade presto: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Scade {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Errore quota",

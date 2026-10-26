@@ -3204,7 +3204,12 @@
       "codeReview": "Revue de code",
       "codeReviewShort": "Revue",
       "monthlyCreditsHint": "Crédits mensuels restants",
-      "monthlyCreditsInline": "Crédits : {{value}}"
+      "monthlyCreditsInline": "Crédits : {{value}}",
+      "resetCreditExpiryHours": "{{hours}} h {{minutes}} min",
+      "resetCreditExpiryMinutes": "{{minutes}} min",
+      "resetCreditExpiryExpired": "Expiré · détails",
+      "resetCreditExpiryUrgent": "Expire bientôt : {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Expire le {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Erreur de quota",

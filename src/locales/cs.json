@@ -3204,7 +3204,12 @@
       "codeReview": "Kontrola kódu",
       "codeReviewShort": "Recenze",
       "monthlyCreditsHint": "Zbývající měsíční kredity",
-      "monthlyCreditsInline": "Kredity: {{value}}"
+      "monthlyCreditsInline": "Kredity: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} h {{minutes}} min",
+      "resetCreditExpiryMinutes": "{{minutes}} min",
+      "resetCreditExpiryExpired": "Vypršelo · podrobnosti",
+      "resetCreditExpiryUrgent": "Brzy vyprší: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Vyprší {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Chyba kvóty",

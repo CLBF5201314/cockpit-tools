@@ -3204,7 +3204,12 @@
       "codeReview": "Przegląd kodu",
       "codeReviewShort": "Przegląd",
       "monthlyCreditsHint": "Pozostałe miesięczne kredyty",
-      "monthlyCreditsInline": "Kredyty: {{value}}"
+      "monthlyCreditsInline": "Kredyty: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} godz. {{minutes}} min",
+      "resetCreditExpiryMinutes": "{{minutes}} min",
+      "resetCreditExpiryExpired": "Wygasło · szczegóły",
+      "resetCreditExpiryUrgent": "Wkrótce wygasa: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Wygasa {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Błąd limitu",

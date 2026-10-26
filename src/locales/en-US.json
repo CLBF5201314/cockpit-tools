@@ -4069,7 +4069,12 @@
       "codeReview": "Code Review",
       "codeReviewShort": "Review",
       "monthlyCreditsHint": "Monthly credits remaining",
-      "monthlyCreditsInline": "Credits: {{value}}"
+      "monthlyCreditsInline": "Credits: {{value}}",
+      "resetCreditExpiryHours": "{{hours}}h {{minutes}}m",
+      "resetCreditExpiryMinutes": "{{minutes}}m",
+      "resetCreditExpiryExpired": "Expired · view details",
+      "resetCreditExpiryUrgent": "Soon: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Expires {{time}} · {{duration}}"
     },
     "usage": {
       "open": "Open OpenAI usage",

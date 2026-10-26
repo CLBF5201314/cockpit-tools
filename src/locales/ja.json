@@ -3204,7 +3204,12 @@
       "codeReview": "コードレビュー",
       "codeReviewShort": "レビュー",
       "monthlyCreditsHint": "今月のクレジット残量",
-      "monthlyCreditsInline": "Credits：{{value}}"
+      "monthlyCreditsInline": "Credits：{{value}}",
+      "resetCreditExpiryHours": "{{hours}}時間{{minutes}}分",
+      "resetCreditExpiryMinutes": "{{minutes}}分",
+      "resetCreditExpiryExpired": "期限切れ · 詳細",
+      "resetCreditExpiryUrgent": "まもなく失効 {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "有効期限 {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "クォータエラー",
