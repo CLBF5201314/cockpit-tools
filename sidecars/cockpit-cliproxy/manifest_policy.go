@@ -963,7 +963,12 @@ func (t *requestUsageTracker) finalize(requestID string, input usageFinalizeInpu
 		if input.status == clientClosedRequestStatus {
 			// Earlier failed attempts do not change the final downstream cause.
 			payload.ErrorCategory = "client_canceled"
-			payload.ErrorMessage = strings.TrimSpace(input.errorMessage)
+			// Older hosts otherwise treat bare "context canceled" as an
+			// upstream timeout and restart every concurrent request's Sidecar.
+			payload.ErrorMessage = "client canceled"
+			if detail := strings.TrimSpace(input.errorMessage); detail != "" {
+				payload.ErrorMessage += ": " + detail
+			}
 		} else if strings.TrimSpace(payload.ErrorCategory) == "" {
 			payload.ErrorCategory = errorCategory(input.status, input.errorMessage, false)
 		}
