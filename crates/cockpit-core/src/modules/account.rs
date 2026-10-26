@@ -1039,6 +1039,22 @@ fn collect_group_quotas(
         .collect()
 }
 
+// Newly added default groups must not exclude accounts whose current client
+// does not report that model family. Explicit selected-group rules stay strict.
+fn reported_auto_switch_groups(
+    scope: &str,
+    groups: Vec<AutoSwitchGroupDefinition>,
+    reported: &[AutoSwitchGroupQuota],
+) -> Vec<AutoSwitchGroupDefinition> {
+    if scope != AUTO_SWITCH_SCOPE_ANY_GROUP || reported.is_empty() {
+        return groups;
+    }
+    groups
+        .into_iter()
+        .filter(|group| reported.iter().any(|quota| quota.id == group.id))
+        .collect()
+}
+
 fn evaluate_auto_switch_trigger(
     account: &Account,
     threshold: i32,
@@ -1460,6 +1476,9 @@ async fn run_auto_switch_if_needed_inner() -> Result<Option<Account>, String> {
         Some(acc) => acc,
         None => return Ok(None),
     };
+
+    let reported = collect_group_quotas(current, &monitored_groups);
+    let monitored_groups = reported_auto_switch_groups(&scope_mode, monitored_groups, &reported);
 
     let Some(trigger_context) =
         evaluate_auto_switch_trigger(current, threshold, &scope_mode, &monitored_groups)
@@ -2316,6 +2335,28 @@ mod tests {
 #[cfg(test)]
 mod new_antigravity_model_tests {
     use super::*;
+    #[test]
+    fn new_default_families_do_not_block_legacy_auto_switch_candidates() {
+        let reported = vec![AutoSwitchGroupQuota {
+            id: "claude_45".into(),
+            name: "Claude".into(),
+            percentage: 10,
+        }];
+        let groups = reported_auto_switch_groups(
+            AUTO_SWITCH_SCOPE_ANY_GROUP,
+            default_auto_switch_groups(),
+            &reported,
+        );
+        assert_eq!(groups.len(), 1);
+        assert_eq!(groups[0].id, "claude_45");
+        let explicit = reported_auto_switch_groups(
+            AUTO_SWITCH_SCOPE_SELECTED_GROUPS,
+            default_auto_switch_groups(),
+            &reported,
+        );
+        assert!(explicit.iter().any(|group| group.id == "g4_argon"));
+    }
+
     #[test]
     fn new_groups_keep_legacy_models_and_separate_new_versions() {
         let groups = default_auto_switch_groups();
