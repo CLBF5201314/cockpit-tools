@@ -10,6 +10,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Show the next Codex reset-credit expiry and remaining time in account and dashboard cards, highlighting approaching expiry while reusing existing quota data.
+- Add Antigravity Gemini 4 Argon, Gemini 3.8 Flash, and Claude 5.5 model groups while preserving older models, effort distinctions, and custom group settings.
+
+### Fixed
+
+- Align New API account-card quota bars with their remaining-quota labels.
+- Prevent canceling one API request from restarting the shared Sidecar and interrupting other requests when cancellation is mistaken for a timeout.
+- Correct third-party models selecting ChatGPT accounts, collaboration-tool namespace restoration, and Gemini argument errors incorrectly cooling down accounts.
+- Correct Kiro enterprise device-authorization and token-refresh request formats.
+- Preserve Claude Desktop Gateway privacy, permission, network, and model preferences when switching accounts, retaining the working configuration if a write fails.
+- Use background-detected version metadata for Antigravity quota requests when legacy installation metadata is unavailable, retaining the minimum protocol version.
+- Keep data-management settings mounted after their first visit to reduce repeated backup scans, without loading them when other settings tabs are opened.
+
 ### Changed
 
 - Clear all published announcements so old notices and automatic announcement popups disappear after a successful client refresh.
