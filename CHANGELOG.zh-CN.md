@@ -13,7 +13,7 @@
 ### 新增
 
 - 账号总览与仪表盘显示 Codex 重置卡最近到期时间和剩余时长，临近到期时突出提醒，复用已有额度数据。
-- 补充 Antigravity 的 Gemini 4 Argon、Gemini 3.8 Flash 和 Claude 5.5 模型及分组，保留旧模型、档位区别和自定义分组设置。
+- 补充 Antigravity 的 Gemini 4 Argon、Gemini 3.8 Flash 和 Claude 5.5 模型及分组，保留旧模型、档位区别和自定义分组设置；默认自动切号仅检查当前账号实际返回的模型分组。
 
 ### 修复
 
