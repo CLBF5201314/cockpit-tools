@@ -12,22 +12,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Show the next Codex reset-credit expiry and remaining time in account and dashboard cards, highlighting approaching expiry while reusing existing quota data.
-- Add Antigravity Gemini 4 Argon, Gemini 3.8 Flash, and Claude 5.5 model groups while preserving older models, effort distinctions, and custom group settings; default automatic rotation checks only model groups actually reported by the current account.
+- Show the next Codex reset-credit expiry and remaining time in account and dashboard cards, highlighting approaching expiry; load missing expiry details in the background and share a short-lived cache to avoid repeated queries across views. Thanks @iamvicliu ([#2724](https://github.com/jlcodes99/cockpit-tools/pull/2724)).
+- Add Antigravity Gemini 4 Argon, Gemini 3.8 Flash, and Claude 5.5 model groups while preserving older models, effort distinctions, and custom group settings; default automatic rotation checks only model groups actually reported by the current account. Thanks @Chain813 ([#2915](https://github.com/jlcodes99/cockpit-tools/pull/2915)).
 
 ### Fixed
 
-- Align New API account-card quota bars with their remaining-quota labels.
-- Prevent canceling one API request from restarting the shared Sidecar and interrupting other requests when cancellation is mistaken for a timeout.
-- Correct third-party models selecting ChatGPT accounts, collaboration-tool namespace restoration, and Gemini argument errors incorrectly cooling down accounts.
-- Correct Kiro enterprise device-authorization and token-refresh request formats.
-- Preserve Claude Desktop Gateway privacy, permission, network, and model preferences when switching accounts, retaining the working configuration if a write fails; switch in the background without waiting for the old gateway’s in-flight request to finish.
-- Use background-detected version metadata for Antigravity quota requests when legacy installation metadata is unavailable, retaining the minimum protocol version.
-- Keep data-management settings mounted after their first visit to reduce repeated backup scans, without loading them when other settings tabs are opened.
+- Align New API account-card quota bars with their remaining-quota labels, so the bar and available/total values use the same basis. Thanks @specetator ([#2923](https://github.com/jlcodes99/cockpit-tools/pull/2923)).
+- Prevent canceling one API request from restarting the shared Sidecar and interrupting other requests when cancellation is mistaken for a timeout. Thanks @limaomei-pixel ([#2909](https://github.com/jlcodes99/cockpit-tools/pull/2909)).
+- Restore flattened collaboration-tool calls to their declared namespace and name, preventing unsupported-call errors during agent coordination. Thanks @jamie950315 ([#2901](https://github.com/jlcodes99/cockpit-tools/pull/2901)).
+- Prevent third-party models in the shared client catalog from being routed to ChatGPT accounts that do not support them, while retaining official Reserve model access. Thanks @jamie950315 ([#2902](https://github.com/jlcodes99/cockpit-tools/pull/2902)).
+- Keep Gemini invalid-argument stream errors scoped to the affected request instead of incorrectly cooling down accounts; retain the upstream error for the caller. Thanks @jamie950315 ([#2904](https://github.com/jlcodes99/cockpit-tools/pull/2904)).
+- Send Kiro enterprise device-authorization and token-refresh requests in the JSON format expected by AWS IAM Identity Center. Thanks @peisencn ([#2799](https://github.com/jlcodes99/cockpit-tools/pull/2799)).
+- Preserve Claude Desktop Gateway privacy, permission, network, and model preferences when switching accounts, retaining the working configuration if a write fails; switch in the background without waiting for the old gateway’s in-flight request to finish. Thanks @fflow2023 ([#2907](https://github.com/jlcodes99/cockpit-tools/pull/2907)).
+- Use background-detected version metadata for Antigravity quota requests when legacy installation metadata is unavailable, retaining the minimum protocol version. Thanks @moyuan10086 ([#2900](https://github.com/jlcodes99/cockpit-tools/pull/2900)).
+- Keep data-management settings mounted after their first visit to reduce repeated backup scans, without loading them when other settings tabs are opened. Thanks @xhrxgr ([#2740](https://github.com/jlcodes99/cockpit-tools/pull/2740)).
 
 ### Changed
 
 - Clear all published announcements so old notices and automatic announcement popups disappear after a successful client refresh.
+
+### Acknowledgments
+
+- Thanks @qxo for the log-content and regular-expression filtering contribution ([#2397](https://github.com/jlcodes99/cockpit-tools/pull/2397)). The existing background-worker implementation is retained, including filtering timeouts and cancellation.
 
 ## [1.3.74] - 2026-10-24
 

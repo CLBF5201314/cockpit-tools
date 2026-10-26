@@ -11,23 +11,28 @@
 ## [Unreleased]
 
 ### 新增
-
-- 账号总览与仪表盘显示 Codex 重置卡最近到期时间和剩余时长，临近到期时突出提醒，复用已有额度数据。
-- 补充 Antigravity 的 Gemini 4 Argon、Gemini 3.8 Flash 和 Claude 5.5 模型及分组，保留旧模型、档位区别和自定义分组设置；默认自动切号仅检查当前账号实际返回的模型分组。
+- 账号总览与仪表盘显示 Codex 重置卡最近到期时间和剩余时长，临近到期时突出提醒；已有额度缺少到期明细时后台补齐，并共享短期缓存，避免切换视图重复查询。感谢 @iamvicliu（[#2724](https://github.com/jlcodes99/cockpit-tools/pull/2724)）。
+- 补充 Antigravity 的 Gemini 4 Argon、Gemini 3.8 Flash 和 Claude 5.5 模型及分组，保留旧模型、档位区别和自定义分组设置；默认自动切号仅检查当前账号实际返回的模型分组。感谢 @Chain813（[#2915](https://github.com/jlcodes99/cockpit-tools/pull/2915)）。
 
 ### 修复
 
-- 修正 New API 账号卡片额度条与剩余额度文字方向相反的问题。
-- 取消单个 API 请求时，不再因取消消息被误判为超时而重启共享 Sidecar、打断其他请求。
-- 修正第三方模型误选 ChatGPT 账号、协作工具命名空间恢复，以及 Gemini 参数错误导致账号被错误冷却的问题。
-- 修正 Kiro 企业账号设备授权与刷新 Token 的请求格式。
-- Claude Desktop Gateway 切换账号时保留用户的隐私、权限、网络限制及模型设置，写入失败时保留原有可用配置；切号在后台执行，不再等待旧网关的进行中请求结束。
-- Antigravity 额度请求在缺少旧版安装元数据时使用后台探测的版本缓存，保留协议版本下限。
-- 数据管理设置首次进入后保留已挂载内容，减少反复切换页签引起的备份扫描，其他页签不提前加载数据管理内容。
+- 修正 New API 账号卡片额度条与剩余额度文字方向相反的问题，让进度条与可用／总额度使用相同口径。感谢 @specetator（[#2923](https://github.com/jlcodes99/cockpit-tools/pull/2923)）。
+- 取消单个 API 请求时，不再因取消消息被误判为超时而重启共享 Sidecar、打断其他请求。感谢 @limaomei-pixel（[#2909](https://github.com/jlcodes99/cockpit-tools/pull/2909)）。
+- 将展开后的协作工具调用恢复为声明中的命名空间与名称，避免子代理协作出现不支持的工具调用错误。感谢 @jamie950315（[#2901](https://github.com/jlcodes99/cockpit-tools/pull/2901)）。
+- 防止共享客户端模型目录中的第三方模型被分配给不支持它们的 ChatGPT 账号，同时保留官方 Reserve 模型调用能力。感谢 @jamie950315（[#2902](https://github.com/jlcodes99/cockpit-tools/pull/2902)）。
+- Gemini 流式响应中的参数错误仅使当前请求失败，不再错误冷却账号；调用方仍能看到原始上游错误。感谢 @jamie950315（[#2904](https://github.com/jlcodes99/cockpit-tools/pull/2904)）。
+- Kiro 企业账号设备授权与 Token 刷新使用 AWS IAM Identity Center 要求的 JSON 请求格式。感谢 @peisencn（[#2799](https://github.com/jlcodes99/cockpit-tools/pull/2799)）。
+- Claude Desktop Gateway 切换账号时保留用户的隐私、权限、网络限制及模型设置，写入失败时保留原有可用配置；切号在后台执行，不再等待旧网关的进行中请求结束。感谢 @fflow2023（[#2907](https://github.com/jlcodes99/cockpit-tools/pull/2907)）。
+- Antigravity 额度请求在缺少旧版安装元数据时使用后台探测的版本缓存，保留协议版本下限。感谢 @moyuan10086（[#2900](https://github.com/jlcodes99/cockpit-tools/pull/2900)）。
+- 数据管理设置首次进入后保留已挂载内容，减少反复切换页签引起的备份扫描，其他页签不提前加载数据管理内容。感谢 @xhrxgr（[#2740](https://github.com/jlcodes99/cockpit-tools/pull/2740)）。
 
 ### 变更
 
 - 清空已发布公告，客户端成功刷新后不再显示旧公告或自动弹出公告。
+
+### 致谢
+
+- 感谢 @qxo 提供日志内容与正则表达式过滤相关贡献（[#2397](https://github.com/jlcodes99/cockpit-tools/pull/2397)）。继续沿用已有的后台过滤实现，包括过滤超时与取消能力。
 
 ## [1.3.74] - 2026-10-24
 

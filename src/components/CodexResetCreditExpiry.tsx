@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { CodexQuota } from '../types/codex';
+import type { CodexQuota, CodexResetCreditsSnapshot } from '../types/codex';
 import { getResetCreditExpiry } from '../utils/codexResetCreditExpiry';
+import { createResetCreditLoader } from '../utils/codexResetCreditLoader';
+import { getCodexResetCredits } from '../services/codexService';
 import './CodexResetCreditExpiry.css';
+
+const loadResetCredits = createResetCreditLoader(getCodexResetCredits);
 
 interface Props {
   accountId: string;
@@ -12,10 +16,28 @@ interface Props {
   onClick: () => void;
 }
 
-export function CodexResetCreditExpiry({ quota, disabled, onClick }: Props) {
+export function CodexResetCreditExpiry({ accountId, quota, disabled, onClick }: Props) {
   const { t, i18n } = useTranslation();
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
   const available = (quota?.reset_credits_available ?? 0) > 0;
+  const count = quota?.reset_credits_available ?? 0;
+  const [details, setDetails] = useState<{
+    accountId: string; count: number; snapshot: CodexResetCreditsSnapshot;
+  } | null>(null);
+  const quotaHasExpiry = Boolean(quota?.reset_credits_next_expires_at)
+    || Boolean(quota?.reset_credits?.some(credit => credit.expires_at));
+  useEffect(() => {
+    if (!available || quotaHasExpiry) return;
+    let active = true;
+    // The usage endpoint only reports the count. Fetch missing expiry details
+    // separately, sharing requests across views without delaying account cards.
+    void loadResetCredits(accountId, count).then(snapshot => {
+      if (active) setDetails({ accountId, count, snapshot });
+    }).catch(() => {
+      // The existing details action remains available for a manual retry.
+    });
+    return () => { active = false; };
+  }, [accountId, count, available, quotaHasExpiry]);
   useEffect(() => {
     if (!available) return;
     const tick = () => setNow(Math.floor(Date.now() / 1000));
@@ -29,13 +51,13 @@ export function CodexResetCreditExpiry({ quota, disabled, onClick }: Props) {
   }, [available]);
 
   if (!available) return null;
-  // The ordinary quota refresh already supplies these fields. Opening account
-  // cards must not start another network request per visible card.
-  const expiry = getResetCreditExpiry({
+  const snapshot = !quotaHasExpiry && details?.accountId === accountId && details.count === count
+    ? details.snapshot : {
     available_count: quota?.reset_credits_available,
     credits: quota?.reset_credits ?? [],
     next_expires_at: quota?.reset_credits_next_expires_at,
-  }, now);
+  };
+  const expiry = getResetCreditExpiry(snapshot, now);
   const absolute = expiry ? new Date(expiry.expiresAt * 1000).toLocaleString(i18n.language, {
     month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false,
   }) : '';
