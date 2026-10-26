@@ -43,6 +43,8 @@ struct GatewayRuntime {
     handle: Option<JoinHandle<()>>,
 }
 
+static GATEWAY_UPDATES: Mutex<()> = Mutex::new(());
+
 static GATEWAY_RUNTIMES: LazyLock<Mutex<HashMap<String, GatewayRuntime>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
 
@@ -138,13 +140,20 @@ pub(crate) fn apply_gateway_for_account(
     apply: impl FnOnce(&ClaudeDesktopLocalGatewayEndpoint) -> Result<(), String>,
 ) -> Result<(), String> {
     let config = GatewayConfig::from_account(account)?;
-    let mut runtimes = GATEWAY_RUNTIMES
+    let _update = GATEWAY_UPDATES
         .lock()
         .map_err(|_| "Claude 本地网关锁已损坏".to_string())?;
-    if let Some(runtime) = runtimes.get(&config.account_id) {
-        if runtime.fingerprint == config.fingerprint {
-            return apply(&runtime.endpoint);
-        }
+    let existing = {
+        let runtimes = GATEWAY_RUNTIMES
+            .lock()
+            .map_err(|_| "Claude 本地网关锁已损坏".to_string())?;
+        runtimes
+            .get(&config.account_id)
+            .filter(|runtime| runtime.fingerprint == config.fingerprint)
+            .map(|runtime| runtime.endpoint.clone())
+    };
+    if let Some(endpoint) = existing {
+        return apply(&endpoint);
     }
 
     let server =
@@ -174,7 +183,11 @@ pub(crate) fn apply_gateway_for_account(
     };
     match apply(&runtime.endpoint) {
         Ok(()) => {
-            if let Some(previous) = runtimes.insert(config.account_id, runtime) {
+            let previous = GATEWAY_RUNTIMES
+                .lock()
+                .map_err(|_| "Claude 本地网关锁已损坏".to_string())?
+                .insert(config.account_id, runtime);
+            if let Some(previous) = previous {
                 stop_runtime(previous);
             }
             Ok(())
@@ -186,11 +199,12 @@ pub(crate) fn apply_gateway_for_account(
     }
 }
 
-fn stop_runtime(mut runtime: GatewayRuntime) {
+fn stop_runtime(runtime: GatewayRuntime) {
     let _ = runtime.stop_tx.send(());
-    if let Some(handle) = runtime.handle.take() {
-        let _ = handle.join();
-    }
+    // Dropping the handle detaches the worker. Its in-flight request drains under
+    // the existing request timeout, then the stop signal closes the listener.
+    // Switching configuration must never wait for that upstream request.
+    drop(runtime.handle);
 }
 
 fn generate_local_api_key() -> String {
@@ -578,5 +592,33 @@ mod tests {
             captured.join().expect("capture thread should finish"),
             "/anthropic/v1/messages"
         );
+    }
+}
+
+#[cfg(test)]
+mod runtime_shutdown_tests {
+    use super::*;
+    #[test]
+    fn replacing_gateway_does_not_wait_for_an_in_flight_request() {
+        let (release, wait) = mpsc::channel();
+        let (done, finished) = mpsc::channel();
+        let handle = thread::spawn(move || {
+            let _ = wait.recv_timeout(Duration::from_secs(2));
+            let _ = done.send(());
+        });
+        let (stop_tx, _stop_rx) = mpsc::channel();
+        let started = std::time::Instant::now();
+        stop_runtime(GatewayRuntime {
+            endpoint: ClaudeDesktopLocalGatewayEndpoint {
+                base_url: String::new(),
+                api_key: String::new(),
+            },
+            fingerprint: String::new(),
+            stop_tx,
+            handle: Some(handle),
+        });
+        assert!(started.elapsed() < Duration::from_millis(500));
+        release.send(()).unwrap();
+        finished.recv_timeout(Duration::from_secs(2)).unwrap();
     }
 }
