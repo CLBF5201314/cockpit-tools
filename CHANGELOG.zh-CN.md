@@ -16,6 +16,7 @@
 
 ### 修复
 
+- 修复 Windows 等平台的 Codex 本地 API 配置在未自定义模型目录时缺少“超高速”选项的问题；仅为支持该档位的内置模型补齐速度信息，保留自定义目录和官方账号策略。
 - 修正 New API 账号卡片额度条与剩余额度文字方向相反的问题，让进度条与可用／总额度使用相同口径。感谢 @specetator（[#2923](https://github.com/jlcodes99/cockpit-tools/pull/2923)）。
 - 取消单个 API 请求时，不再因取消消息被误判为超时而重启共享 Sidecar、打断其他请求。感谢 @limaomei-pixel（[#2909](https://github.com/jlcodes99/cockpit-tools/pull/2909)）。
 - 将展开后的协作工具调用恢复为声明中的命名空间与名称，避免子代理协作出现不支持的工具调用错误。感谢 @jamie950315（[#2901](https://github.com/jlcodes99/cockpit-tools/pull/2901)）。
