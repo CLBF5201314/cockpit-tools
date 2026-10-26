@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Restore the missing Ultrafast option in Codex local API profiles on Windows and other platforms when no custom model catalog is configured. Supplement speed metadata only for supported bundled models while preserving custom catalogs and native account policies.
+- Fix Codex Ultrafast requests losing `service_tier` on Windows and other platforms. Align the native CLI speed capabilities at startup while preserving its model list, other capabilities and custom catalogs; Fast and Ultrafast send `priority` and `ultrafast` respectively.
 - Align New API account-card quota bars with their remaining-quota labels, so the bar and available/total values use the same basis. Thanks @specetator ([#2923](https://github.com/jlcodes99/cockpit-tools/pull/2923)).
 - Prevent canceling one API request from restarting the shared Sidecar and interrupting other requests when cancellation is mistaken for a timeout. Thanks @limaomei-pixel ([#2909](https://github.com/jlcodes99/cockpit-tools/pull/2909)).
 - Restore flattened collaboration-tool calls to their declared namespace and name, preventing unsupported-call errors during agent coordination. Thanks @jamie950315 ([#2901](https://github.com/jlcodes99/cockpit-tools/pull/2901)).
