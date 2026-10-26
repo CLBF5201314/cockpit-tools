@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Prevent canceling one API request from restarting the shared Sidecar and interrupting other requests when cancellation is mistaken for a timeout.
 - Correct third-party models selecting ChatGPT accounts, collaboration-tool namespace restoration, and Gemini argument errors incorrectly cooling down accounts.
 - Correct Kiro enterprise device-authorization and token-refresh request formats.
-- Preserve Claude Desktop Gateway privacy, permission, network, and model preferences when switching accounts, retaining the working configuration if a write fails.
+- Preserve Claude Desktop Gateway privacy, permission, network, and model preferences when switching accounts, retaining the working configuration if a write fails; switch in the background without waiting for the old gateway’s in-flight request to finish.
 - Use background-detected version metadata for Antigravity quota requests when legacy installation metadata is unavailable, retaining the minimum protocol version.
 - Keep data-management settings mounted after their first visit to reduce repeated backup scans, without loading them when other settings tabs are opened.
 
