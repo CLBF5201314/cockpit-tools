@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "Falha ao redefinir: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Reset enviado, mas a atualização da cota falhou: {{error}}",
       "resetCreditsTitleWithExpiry": "Redefinições restantes para a janela de 5 horas: {{count}}. Próximo vencimento: {{time}}",
+      "resetCreditNextExpiry": "Próximo vencimento da redefinição {{time}}",
       "resetCreditTimeUnknown": "Hora desconhecida",
       "resetCreditStatusAvailable": "Disponível",
       "resetCreditStatusRedeemed": "Usada",

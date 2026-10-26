@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "Đặt lại thất bại: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Đã gửi đặt lại nhưng làm mới hạn mức thất bại: {{error}}",
       "resetCreditsTitleWithExpiry": "Lượt đặt lại còn lại cho cửa sổ 5 giờ: {{count}}. Hết hạn gần nhất: {{time}}",
+      "resetCreditNextExpiry": "Lần đặt lại hết hạn gần nhất {{time}}",
       "resetCreditTimeUnknown": "Không rõ thời gian",
       "resetCreditStatusAvailable": "Có sẵn",
       "resetCreditStatusRedeemed": "Đã dùng",

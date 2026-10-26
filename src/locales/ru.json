@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "Сбой сброса: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Сброс отправлен, но обновление квоты не удалось: {{error}}",
       "resetCreditsTitleWithExpiry": "Осталось сбросов для 5-часового окна: {{count}}. Ближайшее истечение: {{time}}",
+      "resetCreditNextExpiry": "Ближайшее истечение сброса {{time}}",
       "resetCreditTimeUnknown": "Время неизвестно",
       "resetCreditStatusAvailable": "Доступно",
       "resetCreditStatusRedeemed": "Использовано",

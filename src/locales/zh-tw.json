@@ -3314,6 +3314,7 @@
       "resetCreditFailed": "重置失敗：{{error}}",
       "resetCreditRefreshAfterConsumeFailed": "已送出重置，但重新整理配額失敗：{{error}}",
       "resetCreditsTitleWithExpiry": "可用於重置目前 5 小時視窗的剩餘次數：{{count}}，最近到期：{{time}}",
+      "resetCreditNextExpiry": "最近重設到期 {{time}}",
       "resetCreditTimeUnknown": "時間未知",
       "resetCreditStatusAvailable": "可用",
       "resetCreditStatusRedeemed": "已使用",

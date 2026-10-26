@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "Reset selhal: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Reset byl odeslán, ale obnova kvóty selhala: {{error}}",
       "resetCreditsTitleWithExpiry": "Zbývající resety pro 5hodinové okno: {{count}}. Nejbližší expirace: {{time}}",
+      "resetCreditNextExpiry": "Nejbližší vypršení resetu {{time}}",
       "resetCreditTimeUnknown": "Čas neznámý",
       "resetCreditStatusAvailable": "K dispozici",
       "resetCreditStatusRedeemed": "Použito",

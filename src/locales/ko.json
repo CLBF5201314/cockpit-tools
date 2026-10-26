@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "재설정 실패: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "재설정은 제출됐지만 쿼터 새로고침에 실패했습니다: {{error}}",
       "resetCreditsTitleWithExpiry": "5시간 창에 남은 재설정 횟수: {{count}}. 다음 만료: {{time}}",
+      "resetCreditNextExpiry": "가장 가까운 초기화 만료 {{time}}",
       "resetCreditTimeUnknown": "시간 알 수 없음",
       "resetCreditStatusAvailable": "사용 가능",
       "resetCreditStatusRedeemed": "사용됨",

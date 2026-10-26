@@ -3230,6 +3230,7 @@
       "resetCreditFailed": "فشلت إعادة الضبط: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "تم إرسال إعادة الضبط، لكن تحديث الحصة فشل: {{error}}",
       "resetCreditsTitleWithExpiry": "عمليات إعادة التعيين المتبقية لنافذة 5 ساعات: {{count}}. أقرب انتهاء: {{time}}",
+      "resetCreditNextExpiry": "أقرب انتهاء لإعادة الضبط {{time}}",
       "resetCreditTimeUnknown": "الوقت غير معروف",
       "resetCreditStatusAvailable": "متاح",
       "resetCreditStatusRedeemed": "مستخدم",

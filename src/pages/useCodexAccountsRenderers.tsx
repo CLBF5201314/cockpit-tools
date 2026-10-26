@@ -886,7 +886,6 @@ export function useCodexAccountsRenderers(context: Pick<ReturnType<typeof useCod
               </div>
             )}
             <CodexAccountProxyCard account={account} placement="summary" />
-            {renderResetCreditControls(account, 'expiry')}
             {!isApiKeyAccount && (
               <div className="account-sub-line">
                 <span className="codex-login-subline" title={signInLine}>
@@ -1074,6 +1073,7 @@ export function useCodexAccountsRenderers(context: Pick<ReturnType<typeof useCod
               </div>
             )}
             <div className="codex-card-bottom">
+              {renderResetCreditControls(account, 'expiry')}
               <CodexAccountProxyCard account={account} placement="detailed" />
               <span className="card-date">{formatDate(account.created_at)}</span>
               <CodexSpeedControl scope="account" account={account} disabled={!!switching}
@@ -2124,7 +2124,6 @@ export function useCodexAccountsRenderers(context: Pick<ReturnType<typeof useCod
                       onError={(text) => setMessage(text ? { text, tone: "error" } : null)} />
                   </div>
                 )}
-                {renderResetCreditControls(account, 'expiry')}
                 {!isApiKeyAccount && (
                   <div className="account-sub-line codex-account-meta-inline">
                     <span className="codex-login-subline" title={signInLine}>
@@ -2274,6 +2273,7 @@ export function useCodexAccountsRenderers(context: Pick<ReturnType<typeof useCod
                     )}
                     {account.plan_type !== 'self_serve_business_usage_based' && <CodexQuotaMiniRows items={quotaItems} t={t} />}
                     <CodexTeamQuotaHistory account={account} />
+                    {renderResetCreditControls(account, 'expiry')}
                     {quotaItems.length === 0 && !cockpitApiAccountBalanceText && (
                       <span style={{ color: "var(--text-muted)", fontSize: 13 }}>
                         {t("common.shared.quota.noData", "暂无配额数据")}

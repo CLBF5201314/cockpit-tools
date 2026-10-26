@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Show the next Codex reset-credit expiry and remaining time in account and dashboard cards, highlighting approaching expiry; load missing expiry details in the background and share a short-lived cache to avoid repeated queries across views. Thanks @iamvicliu ([#2724](https://github.com/jlcodes99/cockpit-tools/pull/2724)).
+- Show the next Codex reset-credit expiry at the bottom of account cards and on the dashboard using the quota time style, highlighting approaching expiry; persist details, stagger refreshes around six hours with bounded concurrency, and update the shared cache immediately when details are opened. Thanks @iamvicliu ([#2724](https://github.com/jlcodes99/cockpit-tools/pull/2724)).
 - Add Antigravity Gemini 4 Argon, Gemini 3.8 Flash, and Claude 5.5 model groups while preserving older models, effort distinctions, and custom group settings; default automatic rotation checks only model groups actually reported by the current account. Thanks @Chain813 ([#2915](https://github.com/jlcodes99/cockpit-tools/pull/2915)).
 
 ### Fixed

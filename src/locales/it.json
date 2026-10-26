@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "Reimpostazione non riuscita: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Reset inviato, ma aggiornamento quota non riuscito: {{error}}",
       "resetCreditsTitleWithExpiry": "Reimpostazioni rimaste per la finestra di 5 ore: {{count}}. Prossima scadenza: {{time}}",
+      "resetCreditNextExpiry": "Prossima scadenza del ripristino {{time}}",
       "resetCreditTimeUnknown": "Ora sconosciuta",
       "resetCreditStatusAvailable": "Disponibile",
       "resetCreditStatusRedeemed": "Usata",

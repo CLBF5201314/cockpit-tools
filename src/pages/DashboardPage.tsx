@@ -2442,10 +2442,6 @@ export function DashboardPage({
       maxMetrics: 4,
       extraContent: !isCodexApiKeyAccount(account) && (account.quota?.reset_credits_available ?? 0) > 0 ? (
         <div className="account-mini-reset-credits">
-          <span className="account-mini-reset-count">
-            <RotateCw size={13} />
-            {t('codex.quota.resetCredits', { count: account.quota?.reset_credits_available })}
-          </span>
           <CodexResetCreditExpiry key={account.id} accountId={account.id} quota={account.quota}
             disabled={refreshing.has(account.id)} onClick={() => onNavigate('codex')} />
         </div>

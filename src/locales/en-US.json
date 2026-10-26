@@ -4048,6 +4048,7 @@
       "resetCreditFailed": "Reset failed: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Reset submitted, but quota refresh failed: {{error}}",
       "resetCreditsTitleWithExpiry": "Resets left for the 5-hour window: {{count}}. Next expires: {{time}}",
+      "resetCreditNextExpiry": "Next reset expiry {{time}}",
       "resetCreditTimeUnknown": "Time unknown",
       "resetCreditStatusAvailable": "Available",
       "resetCreditStatusRedeemed": "Used",

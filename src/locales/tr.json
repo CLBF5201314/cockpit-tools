@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "Sıfırlama başarısız: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Sıfırlama gönderildi, ancak kota yenileme başarısız: {{error}}",
       "resetCreditsTitleWithExpiry": "5 saatlik pencere için kalan sıfırlama: {{count}}. En yakın bitiş: {{time}}",
+      "resetCreditNextExpiry": "Sonraki sıfırlama son kullanımı {{time}}",
       "resetCreditTimeUnknown": "Zaman bilinmiyor",
       "resetCreditStatusAvailable": "Kullanılabilir",
       "resetCreditStatusRedeemed": "Kullanıldı",

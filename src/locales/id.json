@@ -3364,6 +3364,7 @@
       "resetCreditFailed": "Gagal reset: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Reset dikirim, tetapi pembaruan kuota gagal: {{error}}",
       "resetCreditsTitleWithExpiry": "Sisa reset untuk jendela 5 jam: {{count}}. Kedaluwarsa terdekat: {{time}}",
+      "resetCreditNextExpiry": "Kedaluwarsa reset terdekat {{time}}",
       "resetCreditTimeUnknown": "Waktu tidak diketahui",
       "resetCreditStatusAvailable": "Tersedia",
       "resetCreditStatusRedeemed": "Dipakai",

@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "Reset nieudany: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Reset wysłany, ale odświeżenie limitu nieudane: {{error}}",
       "resetCreditsTitleWithExpiry": "Pozostałe resety okna 5 godzin: {{count}}. Najbliższe wygaśnięcie: {{time}}",
+      "resetCreditNextExpiry": "Najbliższe wygaśnięcie resetu {{time}}",
       "resetCreditTimeUnknown": "Czas nieznany",
       "resetCreditStatusAvailable": "Dostępne",
       "resetCreditStatusRedeemed": "Użyte",

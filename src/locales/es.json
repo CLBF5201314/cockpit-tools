@@ -3183,6 +3183,7 @@
       "resetCreditFailed": "Error al reiniciar: {{error}}",
       "resetCreditRefreshAfterConsumeFailed": "Reinicio enviado, pero falló la actualización de cuota: {{error}}",
       "resetCreditsTitleWithExpiry": "Reinicios restantes para la ventana de 5 horas: {{count}}. Próximo vencimiento: {{time}}",
+      "resetCreditNextExpiry": "Próximo vencimiento del restablecimiento {{time}}",
       "resetCreditTimeUnknown": "Hora desconocida",
       "resetCreditStatusAvailable": "Disponible",
       "resetCreditStatusRedeemed": "Usado",

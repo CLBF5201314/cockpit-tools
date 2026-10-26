@@ -4053,6 +4053,7 @@
       "resetCreditFailed": "重置失败：{{error}}",
       "resetCreditRefreshAfterConsumeFailed": "已提交重置，但刷新配额失败：{{error}}",
       "resetCreditsTitleWithExpiry": "可用于重置当前 5 小时窗口的剩余次数：{{count}}，最近到期：{{time}}",
+      "resetCreditNextExpiry": "最近重置到期 {{time}}",
       "resetCreditTimeUnknown": "时间未知",
       "resetCreditStatusAvailable": "可用",
       "resetCreditStatusRedeemed": "已使用",
