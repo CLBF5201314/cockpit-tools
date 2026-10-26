@@ -16,7 +16,9 @@ fn native_is_oauth_authorization_account(account: &CodexAccount) -> bool {
 fn native_default_codex_model(model: &str) -> bool {
     // The client catalog also contains third-party provider models. It is not
     // evidence that a ChatGPT credential can serve those models.
-    default_codex_model_ids()
+    // Reserve is an explicit official capability, not a provider-catalog model.
+    native_is_reserve_model(model)
+        || default_codex_model_ids()
         .iter()
         .any(|candidate| candidate.eq_ignore_ascii_case(model.trim()))
         || (is_gpt_or_codex_namespace_model(model)
