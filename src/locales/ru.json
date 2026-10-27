@@ -3188,7 +3188,7 @@
       "resetCreditStatusRedeemed": "Использовано",
       "resetCreditStatusExpired": "Истекло",
       "resetCreditStatusUnknown": "Неизвестно",
-      "resetCreditNextExpiry": "Ближайшее истечение: {{time}}",
+      "resetCreditNextExpiry": "Ближайшее истечение сброса {{time}}",
       "resetCreditDetailsTitle": "Детали сбросов",
       "resetCreditNoRecords": "Нет записей сброса",
       "resetCreditRecordsLoadFailed": "Не удалось загрузить записи сброса: {{error}}",
@@ -3204,7 +3204,12 @@
       "codeReview": "Обзор кода",
       "codeReviewShort": "Обзор",
       "monthlyCreditsHint": "Остаток месячных кредитов",
-      "monthlyCreditsInline": "Кредиты: {{value}}"
+      "monthlyCreditsInline": "Кредиты: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} ч {{minutes}} мин",
+      "resetCreditExpiryMinutes": "{{minutes}} мин",
+      "resetCreditExpiryExpired": "Истекло · подробнее",
+      "resetCreditExpiryUrgent": "Скоро истечёт: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Истекает {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Ошибка квоты",

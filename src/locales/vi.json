@@ -3188,7 +3188,7 @@
       "resetCreditStatusRedeemed": "Đã dùng",
       "resetCreditStatusExpired": "Hết hạn",
       "resetCreditStatusUnknown": "Không rõ",
-      "resetCreditNextExpiry": "Hết hạn gần nhất: {{time}}",
+      "resetCreditNextExpiry": "Lần đặt lại hết hạn gần nhất {{time}}",
       "resetCreditDetailsTitle": "Chi tiết lượt đặt lại",
       "resetCreditNoRecords": "Chưa có bản ghi đặt lại",
       "resetCreditRecordsLoadFailed": "Không tải được bản ghi đặt lại: {{error}}",
@@ -3204,7 +3204,12 @@
       "codeReview": "Rà soát mã",
       "codeReviewShort": "Rà soát",
       "monthlyCreditsHint": "Tín dụng tháng còn lại",
-      "monthlyCreditsInline": "Tín dụng: {{value}}"
+      "monthlyCreditsInline": "Tín dụng: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} giờ {{minutes}} phút",
+      "resetCreditExpiryMinutes": "{{minutes}} phút",
+      "resetCreditExpiryExpired": "Đã hết hạn · chi tiết",
+      "resetCreditExpiryUrgent": "Sắp hết hạn: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Hết hạn {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Lỗi quota",

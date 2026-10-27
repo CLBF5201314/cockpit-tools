@@ -495,7 +495,14 @@ async fn apply_launch_speed_after_auth(
             .is_some_and(|account| modules::codex_account::is_deepseek_account(&account)) {
             return Ok(());
         }
-        modules::codex_speed::write_app_speed_for_dir(&profile_dir, speed).map(|_| ())
+        modules::codex_speed::write_app_speed_for_dir(&profile_dir, speed.clone())?;
+        if let Err(error) = modules::codex_native_speed_catalog::prepare_for_profile(&profile_dir) {
+            if speed == CodexAppSpeed::Ultrafast {
+                return Err(format!("无法准备超高速请求能力: {error}"));
+            }
+            modules::logger::log_warn(&format!("[Codex Speed] {error}"));
+        }
+        Ok(())
     }).await.map_err(|error| error.to_string())?
 }
 

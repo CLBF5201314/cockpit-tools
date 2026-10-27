@@ -3188,7 +3188,7 @@
       "resetCreditStatusRedeemed": "Kullanıldı",
       "resetCreditStatusExpired": "Süresi doldu",
       "resetCreditStatusUnknown": "Bilinmiyor",
-      "resetCreditNextExpiry": "En yakın bitiş: {{time}}",
+      "resetCreditNextExpiry": "Sonraki sıfırlama son kullanımı {{time}}",
       "resetCreditDetailsTitle": "Sıfırlama ayrıntıları",
       "resetCreditNoRecords": "Sıfırlama kaydı yok",
       "resetCreditRecordsLoadFailed": "Sıfırlama kayıtları yüklenemedi: {{error}}",
@@ -3204,7 +3204,12 @@
       "codeReview": "Kod inceleme",
       "codeReviewShort": "İnceleme",
       "monthlyCreditsHint": "Kalan aylık kredi",
-      "monthlyCreditsInline": "Kredi: {{value}}"
+      "monthlyCreditsInline": "Kredi: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} sa {{minutes}} dk",
+      "resetCreditExpiryMinutes": "{{minutes}} dk",
+      "resetCreditExpiryExpired": "Süresi doldu · ayrıntılar",
+      "resetCreditExpiryUrgent": "Yakında doluyor: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Bitiş {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Kota hatası",

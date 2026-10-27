@@ -3369,7 +3369,7 @@
       "resetCreditStatusRedeemed": "Dipakai",
       "resetCreditStatusExpired": "Kedaluwarsa",
       "resetCreditStatusUnknown": "Tidak diketahui",
-      "resetCreditNextExpiry": "Kedaluwarsa terdekat: {{time}}",
+      "resetCreditNextExpiry": "Kedaluwarsa reset terdekat {{time}}",
       "resetCreditDetailsTitle": "Detail reset",
       "resetCreditNoRecords": "Belum ada catatan reset",
       "resetCreditRecordsLoadFailed": "Gagal memuat catatan reset: {{error}}",
@@ -3385,7 +3385,12 @@
       "codeReview": "Tinjauan kode",
       "codeReviewShort": "Tinjauan",
       "monthlyCreditsHint": "Sisa kredit bulanan",
-      "monthlyCreditsInline": "Kredit: {{value}}"
+      "monthlyCreditsInline": "Kredit: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} j {{minutes}} m",
+      "resetCreditExpiryMinutes": "{{minutes}} m",
+      "resetCreditExpiryExpired": "Kedaluwarsa · detail",
+      "resetCreditExpiryUrgent": "Segera berakhir: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Berakhir {{time}} · {{duration}}"
     },
     "usage": {
       "open": "Buka penggunaan OpenAI",

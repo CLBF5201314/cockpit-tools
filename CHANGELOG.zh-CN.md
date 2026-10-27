@@ -10,9 +10,30 @@
 
 ## [Unreleased]
 
+### 新增
+- 账号卡片与仪表盘在原有位置使用统一的额度时间样式显示 Codex 最近重置到期时间，临近到期时突出提醒；到期明细持久缓存，按账号分散在约 6 小时刷新，并限制请求并发，打开详情时立即更新共享缓存。感谢 @iamvicliu（[#2724](https://github.com/jlcodes99/cockpit-tools/pull/2724)）。
+- 补充 Antigravity 的 Gemini 4 Argon、Gemini 3.8 Flash 和 Claude 5.5 模型及分组，保留旧模型、档位区别和自定义分组设置；默认自动切号仅检查当前账号实际返回的模型分组。感谢 @Chain813（[#2915](https://github.com/jlcodes99/cockpit-tools/pull/2915)）。
+
+### 修复
+
+- 修复 Windows 等平台选中 Codex“超高速”后请求仍丢失 `service_tier` 的问题：启动时同步原生 CLI 的速度能力，保留原生模型列表、其他能力和自定义目录；快速与超高速按选择分别传递 `priority`、`ultrafast`。
+- 修正 New API 账号卡片额度条与剩余额度文字方向相反的问题，让进度条与可用／总额度使用相同口径。感谢 @specetator（[#2923](https://github.com/jlcodes99/cockpit-tools/pull/2923)）。
+- 取消单个 API 请求时，不再因取消消息被误判为超时而重启共享 Sidecar、打断其他请求。感谢 @limaomei-pixel（[#2909](https://github.com/jlcodes99/cockpit-tools/pull/2909)）。
+- 将展开后的协作工具调用恢复为声明中的命名空间与名称，避免子代理协作出现不支持的工具调用错误。感谢 @jamie950315（[#2901](https://github.com/jlcodes99/cockpit-tools/pull/2901)）。
+- 防止共享客户端模型目录中的第三方模型被分配给不支持它们的 ChatGPT 账号，同时保留官方 Reserve 模型调用能力。感谢 @jamie950315（[#2902](https://github.com/jlcodes99/cockpit-tools/pull/2902)）。
+- Gemini 流式响应中的参数错误仅使当前请求失败，不再错误冷却账号；调用方仍能看到原始上游错误。感谢 @jamie950315（[#2904](https://github.com/jlcodes99/cockpit-tools/pull/2904)）。
+- Kiro 企业账号设备授权与 Token 刷新使用 AWS IAM Identity Center 要求的 JSON 请求格式。感谢 @peisencn（[#2799](https://github.com/jlcodes99/cockpit-tools/pull/2799)）。
+- Claude Desktop Gateway 切换账号时保留用户的隐私、权限、网络限制及模型设置，写入失败时保留原有可用配置；切号在后台执行，不再等待旧网关的进行中请求结束。感谢 @fflow2023（[#2907](https://github.com/jlcodes99/cockpit-tools/pull/2907)）。
+- Antigravity 额度请求在缺少旧版安装元数据时使用后台探测的版本缓存，保留协议版本下限。感谢 @moyuan10086（[#2900](https://github.com/jlcodes99/cockpit-tools/pull/2900)）。
+- 数据管理设置首次进入后保留已挂载内容，减少反复切换页签引起的备份扫描，其他页签不提前加载数据管理内容。感谢 @xhrxgr（[#2740](https://github.com/jlcodes99/cockpit-tools/pull/2740)）。
+
 ### 变更
 
 - 清空已发布公告，客户端成功刷新后不再显示旧公告或自动弹出公告。
+
+### 致谢
+
+- 感谢 @qxo 提供日志内容与正则表达式过滤相关贡献（[#2397](https://github.com/jlcodes99/cockpit-tools/pull/2397)）。继续沿用已有的后台过滤实现，包括过滤超时与取消能力。
 
 ## [1.3.74] - 2026-10-24
 

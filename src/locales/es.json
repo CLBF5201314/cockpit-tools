@@ -3188,7 +3188,7 @@
       "resetCreditStatusRedeemed": "Usado",
       "resetCreditStatusExpired": "Vencido",
       "resetCreditStatusUnknown": "Desconocido",
-      "resetCreditNextExpiry": "Próximo vencimiento: {{time}}",
+      "resetCreditNextExpiry": "Próximo vencimiento del restablecimiento {{time}}",
       "resetCreditDetailsTitle": "Detalles de reinicios",
       "resetCreditNoRecords": "Sin registros de reinicio",
       "resetCreditRecordsLoadFailed": "No se pudieron cargar los registros de reinicio: {{error}}",
@@ -3204,7 +3204,12 @@
       "codeReview": "Revisión de código",
       "codeReviewShort": "Revisión",
       "monthlyCreditsHint": "Créditos mensuales restantes",
-      "monthlyCreditsInline": "Créditos: {{value}}"
+      "monthlyCreditsInline": "Créditos: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} h {{minutes}} min",
+      "resetCreditExpiryMinutes": "{{minutes}} min",
+      "resetCreditExpiryExpired": "Caducado · ver detalles",
+      "resetCreditExpiryUrgent": "Caduca pronto: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Caduca {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Error de cuota",

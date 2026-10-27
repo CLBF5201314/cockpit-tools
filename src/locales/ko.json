@@ -3188,7 +3188,7 @@
       "resetCreditStatusRedeemed": "사용됨",
       "resetCreditStatusExpired": "만료됨",
       "resetCreditStatusUnknown": "알 수 없음",
-      "resetCreditNextExpiry": "다음 만료: {{time}}",
+      "resetCreditNextExpiry": "가장 가까운 초기화 만료 {{time}}",
       "resetCreditDetailsTitle": "재설정 상세",
       "resetCreditNoRecords": "재설정 기록 없음",
       "resetCreditRecordsLoadFailed": "재설정 기록을 불러오지 못했습니다: {{error}}",
@@ -3204,7 +3204,12 @@
       "codeReview": "코드 리뷰",
       "codeReviewShort": "리뷰",
       "monthlyCreditsHint": "이번 달 크레딧 잔량",
-      "monthlyCreditsInline": "크레딧: {{value}}"
+      "monthlyCreditsInline": "크레딧: {{value}}",
+      "resetCreditExpiryHours": "{{hours}}시간 {{minutes}}분",
+      "resetCreditExpiryMinutes": "{{minutes}}분",
+      "resetCreditExpiryExpired": "만료됨 · 상세 보기",
+      "resetCreditExpiryUrgent": "곧 만료: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "만료 {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "할당량 오류",

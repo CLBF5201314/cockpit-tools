@@ -3188,7 +3188,7 @@
       "resetCreditStatusRedeemed": "Usada",
       "resetCreditStatusExpired": "Expirada",
       "resetCreditStatusUnknown": "Desconhecida",
-      "resetCreditNextExpiry": "Próximo vencimento: {{time}}",
+      "resetCreditNextExpiry": "Próximo vencimento da redefinição {{time}}",
       "resetCreditDetailsTitle": "Detalhes das redefinições",
       "resetCreditNoRecords": "Sem registros de redefinição",
       "resetCreditRecordsLoadFailed": "Falha ao carregar registros de redefinição: {{error}}",
@@ -3204,7 +3204,12 @@
       "codeReview": "Revisão de código",
       "codeReviewShort": "Revisão",
       "monthlyCreditsHint": "Créditos mensais restantes",
-      "monthlyCreditsInline": "Créditos: {{value}}"
+      "monthlyCreditsInline": "Créditos: {{value}}",
+      "resetCreditExpiryHours": "{{hours}} h {{minutes}} min",
+      "resetCreditExpiryMinutes": "{{minutes}} min",
+      "resetCreditExpiryExpired": "Expirado · detalhes",
+      "resetCreditExpiryUrgent": "Expira em breve: {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "Expira {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "Erro de cota",

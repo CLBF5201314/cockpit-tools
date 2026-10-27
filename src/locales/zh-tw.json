@@ -3319,7 +3319,7 @@
       "resetCreditStatusRedeemed": "已使用",
       "resetCreditStatusExpired": "已過期",
       "resetCreditStatusUnknown": "未知",
-      "resetCreditNextExpiry": "最近到期：{{time}}",
+      "resetCreditNextExpiry": "最近重設到期 {{time}}",
       "resetCreditDetailsTitle": "重置次數明細",
       "resetCreditNoRecords": "暫無重置記錄",
       "resetCreditRecordsLoadFailed": "載入重置記錄失敗：{{error}}",
@@ -3335,7 +3335,12 @@
       "codeReview": "程式碼審查",
       "codeReviewShort": "審閱",
       "monthlyCreditsHint": "本月 credits 剩餘",
-      "monthlyCreditsInline": "Credits：{{value}}"
+      "monthlyCreditsInline": "Credits：{{value}}",
+      "resetCreditExpiryHours": "{{hours}}時{{minutes}}分",
+      "resetCreditExpiryMinutes": "{{minutes}}分",
+      "resetCreditExpiryExpired": "已到期 · 查看詳情",
+      "resetCreditExpiryUrgent": "將到期 {{time}} · {{duration}}",
+      "resetCreditExpiryNormal": "到期 {{time}} · {{duration}}"
     },
     "quotaError": {
       "badge": "配額異常",
