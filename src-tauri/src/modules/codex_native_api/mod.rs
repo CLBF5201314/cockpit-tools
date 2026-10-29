@@ -24,6 +24,7 @@ mod compat;
 mod compat_http;
 mod compat_options;
 mod connection_error;
+mod continuation_preparation;
 pub mod contract;
 pub mod continuity_bridge;
 pub mod diagnostics;
@@ -80,6 +81,9 @@ mod tests;
 
 #[cfg(test)]
 mod diagnostic_identity_http_tests;
+
+#[cfg(test)]
+mod continuation_preparation_http_tests;
 
 #[cfg(test)]
 mod catalog_deadline_tests;

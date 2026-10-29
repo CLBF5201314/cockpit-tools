@@ -76,6 +76,8 @@ pub(super) struct RequestTracker {
     pending_dispatch: Option<Box<PendingDispatch>>,
     dispatch_count: usize,
     dispatch_open: bool,
+    preparation_authorized: bool,
+    preparation_rejection_recorded: bool,
     dispatch_checkpoint: Option<Box<DispatchCheckpoint>>,
     installation_profile: Option<crate::modules::codex_api_identity::InstallationProfile>,
     transport_identity: Option<String>,
@@ -190,6 +192,8 @@ impl RequestTracker {
             pending_dispatch: None,
             dispatch_count: 0,
             dispatch_open: false,
+            preparation_authorized: false,
+            preparation_rejection_recorded: false,
             dispatch_checkpoint: None,
             installation_profile: None,
             transport_identity: None,
@@ -228,6 +232,8 @@ impl RequestTracker {
     ) {
         self.dispatch_count = 0;
         self.dispatch_open = false;
+        self.preparation_authorized = false;
+        self.preparation_rejection_recorded = false;
         self.dispatch_checkpoint = None;
         self.pending_dispatch = None;
         self.quota_account = None;
@@ -308,6 +314,7 @@ impl RequestTracker {
     }
 
     pub(super) fn authorized(&mut self, caller: &Caller, model: &str) {
+        self.preparation_authorized = true;
         if let Some(report) = self
             .report
             .as_mut()
@@ -986,6 +993,17 @@ impl RequestTracker {
     }
 
     pub(super) async fn fail(&mut self, error: &ServiceError) {
+        if self.dispatch_count == 0
+            && self.preparation_authorized
+            && !self.preparation_rejection_recorded
+        {
+            if let Some(event) = self.diagnostics.as_ref().and_then(|context| {
+                super::continuation_preparation::rejection(context, self.started.elapsed(), error)
+            }) {
+                self.preparation_rejection_recorded = true;
+                self.host.continuation_preparation_rejected(event);
+            }
+        }
         let dispatched = self.dispatch_open;
         self.attempt_error(error);
         if dispatched && error.retry_after.is_some() {

@@ -1,0 +1,56 @@
+Sanitized test output, Windows x64, 2026-10-29 (UTC+08:00).
+All fixture data is synthetic; all network services are loopback only.
+No original application logs are included.
+
+=== lifecycle (28 tests) ===
+running 28 tests
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_cancelled_unsent_candidate_releases_permits_without_records ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_conversion_failure_keeps_usage_tier_and_successful_upstream_attempt ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_dispatch_evidence_does_not_depend_on_diagnostic_capture ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_downstream_drop_cancels_only_successful_upstream_requests ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_downstream_success_is_deferred_without_holding_inference_capacity ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_first_connect_failure_can_retry_without_a_phantom_attempt ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_first_connect_failure_then_termination_is_unrecorded ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_first_dispatch_commits_only_the_selected_candidate ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_first_websocket_turn_keeps_handshake_authorization ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_local_fallback_and_handshake_do_not_create_attempts ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_new_turn_resets_upstream_dispatch_evidence ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_preparation_rejection_ignores_drop_handshake_and_unlisted_codes ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_preparation_rejection_is_once_without_payload_capture_or_accounting ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_preparation_rejection_never_reclassifies_a_real_dispatch ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_preparation_rejection_omits_invalid_identity_and_bounds_retry_after ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_preparation_rejection_requires_current_turn_authorization ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_preparation_rejection_resets_for_each_authorized_turn ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_preparation_rejection_serializes_only_safe_metadata ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_quota_is_observed_before_completion_and_ignores_outgoing_headers ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_real_429_survives_rejected_or_cancelled_next_candidate ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_rebuild_abort_follows_attempt_failure_drop_and_success ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_stop_settles_pending_adapter_without_waiting_for_guard_drop ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_tracker_stack_state_stays_bounded ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_transport_failure_records_sanitized_source_and_phase_with_usage ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_unsent_connect_rollback_preserves_previous_real_429 ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_unsent_preparation_failures_have_no_upstream_outcome ... ok
+test modules::codex_native_api::lifecycle::tests::native_lifecycle_unsettled_adapter_has_a_bounded_deadline ... ok
+test modules::codex_native_api::lifecycle::tests::quota_protection_fences_the_pending_candidate_without_committing_a_send ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 4058 filtered out; finished in 0.05s
+
+=== HTTP preparation diagnostic (1 test) ===
+running 1 test
+test modules::codex_native_api::continuation_preparation_http_tests::continuation_preparation_http_rejection_is_metadata_only_and_same_request_recovers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4085 filtered out; finished in 0.07s
+
+=== existing multi-result history (2 tests) ===
+running 2 tests
+test modules::codex_native_api::recovery::automatic_http_tests::multi_result_history_tests::multi_result_history_full_resend_survives_native_http_sse_and_service_restart ... ok
+test modules::codex_native_api::recovery::automatic_http_tests::multi_result_history_tests::multi_result_history_reproduces_the_previous_admission_error_after_reopening_storage ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 4084 filtered out; finished in 0.88s
+
+=== existing pinned-owner cooling (2 tests) ===
+running 2 tests
+test modules::codex_local_access::native_host_tests::native_pinned_cooling_does_not_hide_unavailable_owner_or_override_disable_switch ... ok
+test modules::codex_local_access::native_host_tests::native_pinned_cooling_is_retryable_with_or_without_other_ready_accounts ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 4084 filtered out; finished in 0.03s

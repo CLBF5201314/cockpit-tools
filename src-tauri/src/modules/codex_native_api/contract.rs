@@ -273,6 +273,24 @@ impl std::fmt::Display for ServiceError {
 
 impl std::error::Error for ServiceError {}
 
+/// Metadata-only local rejection, separate from upstream usage and health reports.
+/// Fingerprints are one-way, domain-separated and scoped to this process lifetime.
+#[derive(Clone, Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ContinuationPreparationRejection {
+    pub request_id: String,
+    pub started_at_ms: i64,
+    pub elapsed_ms: u64,
+    pub status: u16,
+    pub code: &'static str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub retry_after_ms: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub thread_fingerprint: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub session_fingerprint: Option<String>,
+}
+
 #[derive(Clone, Debug)]
 pub struct RequestReport {
     /// One-way fingerprint of the actual SIWC access token for stale-error fencing.
@@ -362,6 +380,9 @@ pub trait Host: Send + Sync + 'static {
     fn diagnostic(&self, _context: super::diagnostics::DiagnosticContext) -> BoxFuture<'_, ()> {
         Box::pin(async {})
     }
+    /// Best-effort local observability only: implementations must not block on
+    /// disk/network or update request accounting, quota, cooldown or account health.
+    fn continuation_preparation_rejected(&self, _event: ContinuationPreparationRejection) {}
     fn management<'a>(
         &'a self,
         _caller: &'a Caller,

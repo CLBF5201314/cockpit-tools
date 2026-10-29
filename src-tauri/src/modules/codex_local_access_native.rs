@@ -1192,6 +1192,18 @@ impl native_contract::Host for NativeHostBridge {
     fn payload_logging_enabled(&self) -> futures_util::future::BoxFuture<'_, bool> {
         Box::pin(async { native_request_payload_logging_enabled() })
     }
+    fn continuation_preparation_rejected(
+        &self,
+        event: native_contract::ContinuationPreparationRejection,
+    ) {
+        // The codex_api file layer uses the existing nonblocking writer. This
+        // deliberately bypasses request/diagnostic persistence and account state.
+        if let Ok(metadata) = serde_json::to_string(&event) {
+            logger::log_codex_api_warn(&format!(
+                "[NativeAPI] Continuation preparation rejected: {metadata}"
+            ));
+        }
+    }
     fn diagnostic(
         &self,
         context: NativeDiagnosticContext,
